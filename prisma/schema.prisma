@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Producto {
+  id           Int    @id @default(autoincrement())
+  nombre       String @db.VarChar
+  codigo_sku   String @db.VarChar(20)
+  categoria    String @db.VarChar
+  precio       Int    @db.Integer
+  stock_actual Int    @default(0) @db.Integer
+  stock_minimo Int    @default(0) @db.Integer
+  proveedor    String @db.VarChar
+
+  createdAt DateTime  @default(now()) @db.Timestamp
+  updatedAt DateTime? @db.Timestamp
+
+  historial ProductHistory[]
+
+  @@map("productos")
+}
+
+enum TypeProductHistory {
+  entrada
+  salida
+}
+
+model ProductHistory {
+  
+  id        String             @id @default(uuid())
+  tipo      TypeProductHistory
+  cantidad  Int                @db.Integer
+  fecha     DateTime           @default(now()) @db.Timestamp
+  motivo    String             @db.VarChar
+  createdAt DateTime           @default(now()) @db.Timestamp
+
+  // Relaciones
+  producto    Producto @relation(fields: [producto_id], references: [id])
+  producto_id Int
+
+  @@map("historial_productos")
+}
