@@ -38,6 +38,10 @@ export class ProductExtendedEntity {
             if (isNaN(newUpdatedAt.getTime())) throw "la fecha de actualizacion del registro no es valida (updatedAt)";
         }
 
+        if (!historial) throw "historial es requerido";
+        if (!alertas) throw "alertas es requerido";
+        if (!ordenes_compra) throw "ordenes_compra es requerido";
+
         const historialEntity = historial.map((history: Record<string, any>) => ProductHistoryEntity.fromObject(history));
         const alertasEntity = alertas.map((alert: Record<string, any>) => ProductAlertsEntity.fromObject(alert));
         const ordenesCompraEntity = ordenes_compra.map((orders: Record<string, any>) => PurchaseOrdersEntity.fromObject(orders));

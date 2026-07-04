@@ -21,13 +21,17 @@ export class ProductDatasourceImpl implements ProductDatasource {
         const product = await this.findById(id);
 
         if (operacion === "entrada") {
-            const newProduct = await prisma.producto.update({
+
+            const addition = product.stock_actual + cantidad;
+
+            const promiseUpdate = prisma.producto.update({
                 where: { id },
                 data: {
-                    stock_actual: product.stock_actual + cantidad
+                    stock_actual: addition
                 }
             });
-            await prisma.productHistory.create({
+
+            const promiseHistory = prisma.productHistory.create({
                 data: {
                     producto_id: id,
                     tipo: operacion,
@@ -35,32 +39,64 @@ export class ProductDatasourceImpl implements ProductDatasource {
                     motivo: `${operacion} - ${motivo}`
                 }
             });
+
+            const [newProduct] = await Promise.all([promiseUpdate, promiseHistory]);
+
+            if (addition > product.stock_minimo) {
+                await prisma.alerts.update({
+                    where: { producto_id: product.id },
+                    data: {
+                        estado: "RESUELTA",
+                        descripcion: `Alerta resuleta!`,
+                    }
+                })
+            }
+
             return ProductEntity.fromObject(newProduct);
+
         } else {
             // salida
             const subtraction = product.stock_actual - cantidad;
 
             if (subtraction < 0) throw `La cantidad a de salida (${cantidad}) es mayor al stock actual (${product.stock_actual}) del producto ${product.nombre}`;
 
-            const newProduct = await prisma.producto.update({
+
+            const promiseUpdate = prisma.producto.update({
                 where: { id },
                 data: {
-                    stock_actual: product.stock_actual - cantidad
+                    stock_actual: subtraction
                 }
             });
-            await prisma.productHistory.create({
+
+            const promiseHistory = prisma.productHistory.create({
                 data: {
                     producto_id: id,
                     tipo: operacion,
                     cantidad: cantidad,
                     motivo: `${operacion} - ${motivo}`
                 }
-            })
+            });
+
+            const [newProduct] = await Promise.all([promiseUpdate, promiseHistory]);
+
+            if (subtraction <= product.stock_minimo) {
+                await prisma.alerts.upsert({
+                    where: { producto_id: id },
+                    create: {
+                        tipo: "STOCK_BAJO",
+                        estado: "ACTIVA",
+                        descripcion: `El stock de un producto bajo igual o por debajo del stock mínimo - stock_actual: ${newProduct.stock_actual}, stock_minimo: ${newProduct.stock_minimo}`,
+                        producto_id: product.id,
+                    },
+                    update: {}
+                })
+            }
+
             return ProductEntity.fromObject(newProduct);
         }
     }
 
-    async getAll(filterProductDto: FilterProductDto): Promise<ProductEntity[]> {
+    async getAll(filterProductDto: FilterProductDto): Promise<ProductExtendedEntity[]> {
         const { categoria, proveedor, estado_alerta, rango_stock } = filterProductDto;
         const where: Prisma.ProductoWhereInput = {
             ...(categoria !== undefined && { categoria }),
@@ -79,8 +115,16 @@ export class ProductDatasourceImpl implements ProductDatasource {
                 },
             }),
         };
-        const products = await prisma.producto.findMany({ where: where });
-        return products.map(product => ProductEntity.fromObject(product));
+        const products = await prisma.producto.findMany({
+            where: where,
+            include: {
+                alertas: true,
+                historial: true,
+                ordenes_compra: true
+            }
+        });
+        console.log(products);
+        return products.map(product => ProductExtendedEntity.fromObject(product));
     }
 
     async findById(id: number): Promise<ProductExtendedEntity> {

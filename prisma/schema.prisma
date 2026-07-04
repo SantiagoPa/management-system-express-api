@@ -23,7 +23,7 @@ model Producto {
   proveedor    String @db.VarChar
 
   createdAt DateTime  @default(now()) @db.Timestamp
-  updatedAt DateTime? @db.Timestamp
+  updatedAt DateTime? @updatedAt @db.Timestamp
 
   historial      ProductHistory[]
   ordenes_compra PurchaseOrder[]
@@ -67,10 +67,11 @@ model Alerts {
   estado      StatusAlert
   descripcion String      @db.VarChar
   createdAt   DateTime    @default(now()) @db.Timestamp
-  updatedAt   DateTime?   @db.Timestamp
+  updatedAt   DateTime?   @updatedAt @db.Timestamp
+  
 
   producto    Producto @relation(fields: [producto_id], references: [id])
-  producto_id Int
+  producto_id Int @unique
 
   @@map("alertas")
 }
@@ -89,7 +90,7 @@ model PurchaseOrder {
   cantidad_solicitada Int                 @db.Integer
 
   createdAt   DateTime  @default(now()) @db.Timestamp
-  updatedAt   DateTime? @db.Timestamp
+  updatedAt   DateTime? @updatedAt @db.Timestamp
   // Relaciones
   producto    Producto  @relation(fields: [producto_id], references: [id])
   producto_id Int

@@ -8,7 +8,7 @@ export abstract class ProductRepository {
 
     abstract create(createProductDto: CreateProductDto): Promise<ProductEntity>;
 
-    abstract getAll(filterProductDto: FilterProductDto): Promise<ProductEntity[]>;
+    abstract getAll(filterProductDto: FilterProductDto): Promise<ProductExtendedEntity[]>;
 
     abstract findById(id: number): Promise<ProductExtendedEntity>;
 

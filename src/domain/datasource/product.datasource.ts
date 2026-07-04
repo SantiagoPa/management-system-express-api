@@ -9,7 +9,7 @@ export abstract class ProductDatasource {
     abstract create(createProductDto: CreateProductDto): Promise<ProductEntity>;
 
     // todo: pagination
-    abstract getAll(filterProductDto: FilterProductDto): Promise<ProductEntity[]>;
+    abstract getAll(filterProductDto: FilterProductDto): Promise<ProductExtendedEntity[]>;
     abstract findById(id: number): Promise<ProductExtendedEntity>;
     abstract updateAmountById(updateAmountProductDto: UpdateAmountProductDto): Promise<ProductEntity>;
     abstract deleteById(id: number): Promise<ProductEntity>;

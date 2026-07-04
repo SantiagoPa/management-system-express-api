@@ -18,7 +18,7 @@ export class ProductRepositoryImpl implements ProductRepository {
         return this.datasource.create(createProductDto);
     }
 
-    getAll(filterProductDto: FilterProductDto): Promise<ProductEntity[]> {
+    getAll(filterProductDto: FilterProductDto): Promise<ProductExtendedEntity[]> {
         return this.datasource.getAll(filterProductDto);
     }
 
