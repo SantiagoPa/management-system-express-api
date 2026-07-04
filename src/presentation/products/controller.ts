@@ -4,6 +4,7 @@ import { CreateProductDto } from "../../domain/dtos/products/create-product.dto.
 import { CreateProduct, GetProduct, GetProducts, SeedProduct, type ProductRepository } from "../../domain/index.ts";
 import { UpdateAmountProductDto } from "../../domain/dtos/products/update-amount-prodcut.dto.ts";
 import { UpdateAmountProduct } from "../../domain/use-cases/products/update-amount-product.ts";
+import { FilterProductDto } from "../../domain/dtos/products/filter-product.dto.ts";
 
 export class ProductsController {
 
@@ -13,8 +14,19 @@ export class ProductsController {
     ) { }
 
     public getProducts = async (req: Request, res: Response) => {
+
+        const [errors, filterProductDto] = FilterProductDto.create(req.query);
+
+        if (errors) {
+            return res.status(400).json({
+                data: null,
+                success: false,
+                errors,
+            });
+        }
+
         new GetProducts(this.repository)
-            .execute()
+            .execute(filterProductDto!)
             .then(products => res.json(products))
             .catch(error => res.status(400).json({ error }));
     }
@@ -55,7 +67,7 @@ export class ProductsController {
 
     public inventoryAdjustment = async (req: Request, res: Response) => {
         const id = Number(req.params.id);
-        const [errors, updateAmountProductDto] = UpdateAmountProductDto.create({...req.body, id});
+        const [errors, updateAmountProductDto] = UpdateAmountProductDto.create({ ...req.body, id });
 
         if (errors) {
             return res.status(400).json({
@@ -67,8 +79,8 @@ export class ProductsController {
 
         new UpdateAmountProduct(this.repository)
             .execute(updateAmountProductDto!)
-            .then(product=> res.json(product))
-            .catch(error => res.status(400).json({error}))
+            .then(product => res.json(product))
+            .catch(error => res.status(400).json({ error }))
 
     }
 

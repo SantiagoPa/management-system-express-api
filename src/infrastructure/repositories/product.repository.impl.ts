@@ -1,3 +1,4 @@
+import type { FilterProductDto } from "../../domain/dtos/products/filter-product.dto.ts";
 import type { UpdateAmountProductDto } from "../../domain/dtos/products/update-amount-prodcut.dto.ts";
 import type { CreateProductDto, ProductDatasource, ProductEntity, ProductRepository } from "../../domain/index.ts";
 
@@ -16,8 +17,8 @@ export class ProductRepositoryImpl implements ProductRepository {
         return this.datasource.create(createProductDto);
     }
 
-    getAll(): Promise<ProductEntity[]> {
-        return this.datasource.getAll();
+    getAll(filterProductDto: FilterProductDto): Promise<ProductEntity[]> {
+        return this.datasource.getAll(filterProductDto);
     }
 
     findById(id: number): Promise<ProductEntity> {

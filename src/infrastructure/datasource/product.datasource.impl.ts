@@ -1,7 +1,9 @@
 import { seedProductsData } from "../../data/const/seed_products.ts";
 import { prisma } from "../../data/postgres/index.ts";
+import type { FilterProductDto } from "../../domain/dtos/products/filter-product.dto.ts";
 import type { UpdateAmountProductDto } from "../../domain/dtos/products/update-amount-prodcut.dto.ts";
 import { ProductEntity, type CreateProductDto, type ProductDatasource } from "../../domain/index.ts";
+import type { Prisma } from "../../generated/prisma/client.ts";
 
 export class ProductDatasourceImpl implements ProductDatasource {
 
@@ -35,7 +37,7 @@ export class ProductDatasourceImpl implements ProductDatasource {
         } else {
             // salida
             const subtraction = product.stock_actual - cantidad;
-            
+
             if (subtraction < 0) throw `La cantidad a de salida (${cantidad}) es mayor al stock actual (${product.stock_actual}) del producto ${product.nombre}`;
 
             const newProduct = await prisma.producto.update({
@@ -56,8 +58,26 @@ export class ProductDatasourceImpl implements ProductDatasource {
         }
     }
 
-    async getAll(): Promise<ProductEntity[]> {
-        const products = await prisma.producto.findMany();
+    async getAll(filterProductDto: FilterProductDto): Promise<ProductEntity[]> {
+        const { categoria, proveedor, estado_alerta, rango_stock } = filterProductDto;
+        const where: Prisma.ProductoWhereInput = {
+            ...(categoria !== undefined && { categoria }),
+            ...(proveedor !== undefined && { proveedor }),
+            ...(rango_stock !== undefined && {
+                stock_actual: {
+                    gte: rango_stock[0],
+                    lte: rango_stock[1],
+                },
+            }),
+            ...(estado_alerta !== undefined && {
+                alertas: {
+                    some: {
+                        estado: estado_alerta,
+                    },
+                },
+            }),
+        };
+        const products = await prisma.producto.findMany({ where: where });
         return products.map(product => ProductEntity.fromObject(product));
     }
 
@@ -78,6 +98,7 @@ export class ProductDatasourceImpl implements ProductDatasource {
     }
 
     async seed(): Promise<string> {
+        await prisma.producto.deleteMany();
         const products = await prisma.producto.createMany({
             data: seedProductsData
         });

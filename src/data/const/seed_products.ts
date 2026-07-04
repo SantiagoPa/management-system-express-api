@@ -21,7 +21,7 @@ export const seedProductsData = [
     {
         "nombre": "Leche Entera 1L",
         "codigo_sku": "LAC-001",
-        "categoria": "Lácteos",
+        "categoria": "Lacteos",
         "precio": 2100,
         "stock_actual": 200,
         "stock_minimo": 60,
@@ -30,7 +30,7 @@ export const seedProductsData = [
     {
         "nombre": "Yogur Natural 500g",
         "codigo_sku": "LAC-002",
-        "categoria": "Lácteos",
+        "categoria": "Lacteos",
         "precio": 2800,
         "stock_actual": 15,
         "stock_minimo": 25,

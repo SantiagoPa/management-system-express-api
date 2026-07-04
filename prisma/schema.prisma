@@ -27,6 +27,7 @@ model Producto {
 
   historial      ProductHistory[]
   ordenes_compra PurchaseOrder[]
+  alertas Alerts[]
 
   @@map("productos")
 }
@@ -65,6 +66,9 @@ model Alerts {
   tipo TypeAlert
   estado StatusAlert
   descripcion String @db.VarChar
+
+  producto    Producto @relation(fields: [producto_id], references: [id])
+  producto_id Int
 
   @@map("alertas")
 }
