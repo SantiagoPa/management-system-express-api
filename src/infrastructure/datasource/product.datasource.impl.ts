@@ -1,8 +1,10 @@
 import { seedProductsData } from "../../data/const/seed_products.ts";
 import { prisma } from "../../data/postgres/index.ts";
+import { ProductExtendedEntity } from "../../domain/entities/product-extended.entity.ts";
+
+import { ProductEntity, type CreateProductDto, type ProductDatasource } from "../../domain/index.ts";
 import type { FilterProductDto } from "../../domain/dtos/products/filter-product.dto.ts";
 import type { UpdateAmountProductDto } from "../../domain/dtos/products/update-amount-prodcut.dto.ts";
-import { ProductEntity, type CreateProductDto, type ProductDatasource } from "../../domain/index.ts";
 import type { Prisma } from "../../generated/prisma/client.ts";
 
 export class ProductDatasourceImpl implements ProductDatasource {
@@ -81,10 +83,23 @@ export class ProductDatasourceImpl implements ProductDatasource {
         return products.map(product => ProductEntity.fromObject(product));
     }
 
-    async findById(id: number): Promise<ProductEntity> {
-        const product = await prisma.producto.findFirst({ where: { id } });
-        if (!product) throw `Producto con el id: ${id} no fue encontrado`;
-        return ProductEntity.fromObject(product);
+    async findById(id: number): Promise<ProductExtendedEntity> {
+        try {
+            const product = await prisma.producto.findFirst({
+                where: { id },
+                include: {
+                    historial: true,
+                    alertas: true,
+                    ordenes_compra: true
+                }
+            });
+            if (!product) throw `Producto con el id: ${id} no fue encontrado`;
+            console.log({ product })
+            return ProductExtendedEntity.fromObject(product);
+        } catch (error) {
+            console.log({ error });
+            throw `Producto con el id: ${id} no fue encontrado`;
+        }
     }
 
     async updateById(id: number): Promise<ProductEntity> {

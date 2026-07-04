@@ -1,5 +1,6 @@
 import type { FilterProductDto } from "../../domain/dtos/products/filter-product.dto.ts";
 import type { UpdateAmountProductDto } from "../../domain/dtos/products/update-amount-prodcut.dto.ts";
+import type { ProductExtendedEntity } from "../../domain/entities/product-extended.entity.ts";
 import type { CreateProductDto, ProductDatasource, ProductEntity, ProductRepository } from "../../domain/index.ts";
 
 export class ProductRepositoryImpl implements ProductRepository {
@@ -21,7 +22,7 @@ export class ProductRepositoryImpl implements ProductRepository {
         return this.datasource.getAll(filterProductDto);
     }
 
-    findById(id: number): Promise<ProductEntity> {
+    findById(id: number): Promise<ProductExtendedEntity> {
         return this.datasource.findById(id);
     }
 

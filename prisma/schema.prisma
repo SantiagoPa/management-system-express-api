@@ -27,7 +27,7 @@ model Producto {
 
   historial      ProductHistory[]
   ordenes_compra PurchaseOrder[]
-  alertas Alerts[]
+  alertas        Alerts[]
 
   @@map("productos")
 }
@@ -52,7 +52,6 @@ model ProductHistory {
   @@map("historial_productos")
 }
 
-
 enum TypeAlert {
   STOCK_BAJO
 }
@@ -61,11 +60,14 @@ enum StatusAlert {
   ACTIVA
   RESUELTA
 }
+
 model Alerts {
-  id String @id @default(uuid())
-  tipo TypeAlert
-  estado StatusAlert
-  descripcion String @db.VarChar
+  id          String      @id @default(uuid())
+  tipo        TypeAlert
+  estado      StatusAlert
+  descripcion String      @db.VarChar
+  createdAt   DateTime    @default(now()) @db.Timestamp
+  updatedAt   DateTime?   @db.Timestamp
 
   producto    Producto @relation(fields: [producto_id], references: [id])
   producto_id Int
@@ -86,10 +88,11 @@ model PurchaseOrder {
   proveedor           String              @db.VarChar
   cantidad_solicitada Int                 @db.Integer
 
+  createdAt   DateTime  @default(now()) @db.Timestamp
+  updatedAt   DateTime? @db.Timestamp
   // Relaciones
-  producto    Producto @relation(fields: [producto_id], references: [id])
+  producto    Producto  @relation(fields: [producto_id], references: [id])
   producto_id Int
 
   @@map("ordenes_compra")
-
 }
