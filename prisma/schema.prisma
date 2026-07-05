@@ -12,11 +12,20 @@ datasource db {
   provider = "postgresql"
 }
 
+
+enum TypeCategory {
+  Bebidas
+  Lacteos
+  Snacks
+  Limpieza
+  Frutas
+  Granos
+}
 model Producto {
   id           Int       @id @default(autoincrement())
   nombre       String    @db.VarChar
   codigo_sku   String    @unique @db.VarChar(20)
-  categoria    String    @db.VarChar
+  categoria    TypeCategory
   precio       Int       @db.Integer
   stock_actual Int       @default(0) @db.Integer
   stock_minimo Int       @default(0) @db.Integer
@@ -70,7 +79,7 @@ model Alerts {
   updatedAt   DateTime?   @updatedAt @db.Timestamp
 
   producto    Producto @relation(fields: [producto_id], references: [id], onDelete: Cascade)
-  producto_id Int      @unique
+  producto_id Int
 
   @@map("alertas")
 }

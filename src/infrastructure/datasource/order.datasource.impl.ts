@@ -75,21 +75,25 @@ export class OrderDatasourceImpl implements OrderDatasource {
                     }
                 });
 
-                const promiseAlert = prisma.alerts.update({
-                    where: { producto_id: order.producto_id },
-                    data: {
-                        estado: "RESUELTA",
-                        descripcion: `Alerta resuelta`,
-                    }
-                });
+                const activeAlert = await prisma.alerts.findFirst({ where: { producto_id: product.id, estado: "ACTIVA" } });
+                let promiseAlert;
 
+                if (activeAlert) {
+                    promiseAlert = prisma.alerts.update({
+                        where: { id: activeAlert.id },
+                        data: {
+                            estado: "RESUELTA",
+                            descripcion: `Alerta resuelta - stock_actual: ${product.stock_actual + order.cantidad_solicitada}, stock_minimo: ${product.stock_minimo}`,
+                        },
+                    })
+                }
                 await Promise.all([promiseProduct, promiseAlert]);
             }
 
             return OrderEntity.fromObject(order);
         }
 
-        return OrderEntity.fromObject(order);
+        throw `No es posible realizar el siguiente 'type_action': ${type_action}`;
     }
 
 }

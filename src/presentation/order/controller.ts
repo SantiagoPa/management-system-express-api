@@ -22,7 +22,7 @@ export class OrderController {
         new CreateOrder(this.repository)
             .execute(createOrderDto!)
             .then((order) => res.json(order))
-            .catch(error => res.status(400).json(error))
+            .catch(error => res.status(400).json({error}))
     }
 
     public updateStatusOrder = async (req: Request, res: Response) => {
@@ -40,7 +40,7 @@ export class OrderController {
         new UpdateStatusOrder(this.repository)
             .execute(updateStatusOrderDto!)
             .then((order) => res.json(order))
-            .catch(error => res.status(400).json(error))
+            .catch(error => res.status(400).json({error}))
     }
 
 }

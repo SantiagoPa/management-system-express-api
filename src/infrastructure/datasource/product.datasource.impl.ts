@@ -42,15 +42,17 @@ export class ProductDatasourceImpl implements ProductDatasource {
 
             const [newProduct] = await Promise.all([promiseUpdate, promiseHistory]);
 
+            // Cierre automático de alerta si el stock subió por encima del mínimo
             if (addition > product.stock_minimo) {
-                
-                const alert = await prisma.alerts.findUnique({ where: { producto_id: product.id } });
-                if (alert) {
-                    await prisma.alerts.updateMany({
-                        where: { producto_id: product.id },
+
+                const alert = await prisma.alerts.findFirst({ where: { producto_id: product.id } });
+
+                if (alert && alert.estado === "ACTIVA") {
+                    await prisma.alerts.update({
+                        where: { id: alert.id },
                         data: {
                             estado: "RESUELTA",
-                            descripcion: `Alerta resuleta!`,
+                            descripcion: `Alerta resuelta - stock_actual: ${addition}, stock_minimo: ${product.stock_minimo}`,
                         },
                     })
                 }
@@ -62,7 +64,7 @@ export class ProductDatasourceImpl implements ProductDatasource {
             // salida
             const subtraction = product.stock_actual - cantidad;
 
-            if (subtraction < 0) throw `La cantidad a de salida (${cantidad}) es mayor al stock actual (${product.stock_actual}) del producto ${product.nombre}`;
+            if (subtraction < 0) throw `La cantidad a de salida (${cantidad}) es mayor al stock actual (${product.stock_actual})`;
 
 
             const promiseUpdate = prisma.producto.update({
@@ -83,17 +85,34 @@ export class ProductDatasourceImpl implements ProductDatasource {
 
             const [newProduct] = await Promise.all([promiseUpdate, promiseHistory]);
 
+
+            // Generar alerta si el stock bajó igual o por debajo del mínimo y generar orden
             if (subtraction <= product.stock_minimo) {
-                await prisma.alerts.upsert({
-                    where: { producto_id: id },
-                    create: {
-                        tipo: "STOCK_BAJO",
-                        estado: "ACTIVA",
-                        descripcion: `El stock de un producto bajo igual o por debajo del stock mínimo - stock_actual: ${newProduct.stock_actual}, stock_minimo: ${newProduct.stock_minimo}`,
-                        producto_id: product.id,
-                    },
-                    update: {}
-                })
+
+                const activeAlert = await prisma.alerts.findFirst({
+                    where: { producto_id: id, estado: "ACTIVA" }
+                });
+
+                // Solo crear si NO existe ya una alerta activa (una activa por producto)
+                if (!activeAlert) {
+                    await prisma.alerts.create({
+                        data: {
+                            tipo: "STOCK_BAJO",
+                            estado: "ACTIVA",
+                            descripcion: `El stock bajó igual o por debajo del mínimo - stock_actual: ${subtraction}, stock_minimo: ${product.stock_minimo}`,
+                            producto_id: id,
+                        }
+                    });
+                }
+
+                await prisma.purchaseOrder.create({
+                    data: {
+                        estado: "PENDIENTE",
+                        proveedor: newProduct.proveedor,
+                        producto_id: newProduct.id,
+                        cantidad_solicitada: newProduct.stock_minimo * 2
+                    }
+                });
             }
 
             return ProductEntity.fromObject(newProduct);
@@ -120,14 +139,16 @@ export class ProductDatasourceImpl implements ProductDatasource {
             }),
         };
         const products = await prisma.producto.findMany({
-            where: { ...where, activo: true },
+            where: {
+                ...where,
+                activo: true,
+            },
             include: {
                 alertas: true,
                 historial: true,
                 ordenes_compra: true
             }
         });
-        console.log(products);
         return products.map(product => ProductExtendedEntity.fromObject(product));
     }
 
@@ -142,10 +163,8 @@ export class ProductDatasourceImpl implements ProductDatasource {
                 }
             });
             if (!product) throw `Producto con el id: ${id} no fue encontrado`;
-            console.log({ product, order: product.ordenes_compra });
             return ProductExtendedEntity.fromObject(product);
         } catch (error) {
-            console.log({ error });
             throw error
         }
     }

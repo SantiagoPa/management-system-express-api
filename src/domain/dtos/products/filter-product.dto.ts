@@ -1,10 +1,12 @@
 import z from 'zod';
-import { StatusAlert } from "../../../generated/prisma/enums.ts";
+import { StatusAlert, TypeCategory } from "../../../generated/prisma/enums.ts";
 import { formatErrrorsSchemasZod } from '../../../utils/formatErrrorsSchemasZod.ts';
 
 
 const filterProductSchema = z.object({
-    "categoria": z.string("La 'categoria' debe venir en formato texto").optional(),
+    "categoria": z.enum(["Bebidas", "Lacteos", "Snacks", "Limpieza", "Frutas", "Granos"], {
+        message: "La 'categoria' debe ser una de las siguientes opciones: Bebidas, Lacteos, Snacks, Limpieza, Frutas, Granos"
+    }),
     "proveedor": z.string("El 'proveedor' debe venir en formato texto").optional(),
     "estado_alerta": z.enum(["ACTIVA", "RESUELTA"], {
         message: "El 'estado_alerta' debe ser 'ACTIVA' o 'RESUELTA'"
@@ -17,7 +19,7 @@ const filterProductSchema = z.object({
 export class FilterProductDto {
 
     constructor(
-        public readonly categoria?: string,
+        public readonly categoria?: TypeCategory,
         public readonly proveedor?: string,
         public readonly estado_alerta?: StatusAlert,
         public readonly rango_stock?: [number, number] | undefined,

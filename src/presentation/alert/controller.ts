@@ -22,6 +22,6 @@ export class AlertController {
         new GetAlerts(this.repository)
             .execute(filterAlertDto!)
             .then(alerts => res.json(alerts))
-            .catch(error => res.status(400).json(error))
+            .catch(error => res.status(400).json({error}))
     }
 }

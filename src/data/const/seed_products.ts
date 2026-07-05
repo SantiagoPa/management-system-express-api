@@ -1,5 +1,8 @@
+import type { TypeCategory } from "../../generated/prisma/enums.ts";
 
-export const seedProductsData = [
+type SeedProducts = { nombre: string; codigo_sku: string; categoria: TypeCategory; precio: number; stock_actual: number; stock_minimo: number; proveedor: string; }
+
+export const seedProductsData: SeedProducts[] = [
     {
         "nombre": "Agua Mineral 500ml",
         "codigo_sku": "BEB-001",
