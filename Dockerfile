@@ -28,4 +28,4 @@ FROM node:22-alpine3.21 AS prod
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
-CMD ["sh", "-c", "env | sort && node dist/app.js"]
+CMD ["sh", "-c", "node dist/app.js"]
