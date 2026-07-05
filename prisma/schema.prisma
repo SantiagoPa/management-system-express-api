@@ -15,7 +15,7 @@ datasource db {
 model Producto {
   id           Int       @id @default(autoincrement())
   nombre       String    @db.VarChar
-  codigo_sku   String    @db.VarChar(20)
+  codigo_sku   String    @unique @db.VarChar(20)
   categoria    String    @db.VarChar
   precio       Int       @db.Integer
   stock_actual Int       @default(0) @db.Integer

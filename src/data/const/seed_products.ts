@@ -11,7 +11,7 @@ export const seedProductsData = [
     },
     {
         "nombre": "Jugo de Naranja 1L",
-        "codigo_sku": "BEB-001",
+        "codigo_sku": "BEB-002",
         "categoria": "Bebidas",
         "precio": 3200,
         "stock_actual": 30,
