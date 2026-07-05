@@ -20,8 +20,6 @@ WORKDIR /app
 RUN npm install -g pnpm
 COPY . .
 COPY --from=deps-dev /app/node_modules ./node_modules
-RUN node -e "console.log('POSTGRES_URL:', process.env.POSTGRES_URL)"
-RUN pnpm run prisma:migrate:prod
 RUN pnpm run build
 
 
@@ -29,4 +27,4 @@ FROM node:22-alpine3.21 AS prod
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
-CMD ["node", "dist/app.js"]
+CMD ["sh", "-c", "pnpm run prisma:migrate:prod && node dist/app.js"]
