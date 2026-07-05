@@ -13,17 +13,17 @@ datasource db {
 }
 
 model Producto {
-  id           Int    @id @default(autoincrement())
-  nombre       String @db.VarChar
-  codigo_sku   String @db.VarChar(20)
-  categoria    String @db.VarChar
-  precio       Int    @db.Integer
-  stock_actual Int    @default(0) @db.Integer
-  stock_minimo Int    @default(0) @db.Integer
-  proveedor    String @db.VarChar
-
-  createdAt DateTime  @default(now()) @db.Timestamp
-  updatedAt DateTime? @updatedAt @db.Timestamp
+  id           Int       @id @default(autoincrement())
+  nombre       String    @db.VarChar
+  codigo_sku   String    @db.VarChar(20)
+  categoria    String    @db.VarChar
+  precio       Int       @db.Integer
+  stock_actual Int       @default(0) @db.Integer
+  stock_minimo Int       @default(0) @db.Integer
+  proveedor    String    @db.VarChar
+  activo       Boolean   @default(true) @db.Boolean
+  createdAt    DateTime  @default(now()) @db.Timestamp
+  updatedAt    DateTime? @updatedAt @db.Timestamp
 
   historial      ProductHistory[]
   ordenes_compra PurchaseOrder[]

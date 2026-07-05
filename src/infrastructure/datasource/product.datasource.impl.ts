@@ -116,7 +116,7 @@ export class ProductDatasourceImpl implements ProductDatasource {
             }),
         };
         const products = await prisma.producto.findMany({
-            where: where,
+            where: { ...where, activo: true },
             include: {
                 alertas: true,
                 historial: true,
@@ -152,7 +152,12 @@ export class ProductDatasourceImpl implements ProductDatasource {
 
     async deleteById(id: number): Promise<ProductEntity> {
         await this.findById(id);
-        const product = await prisma.producto.delete({ where: { id } });
+        const product = await prisma.producto.update({
+            where: { id },
+            data: {
+                activo: false
+            }
+        });
         return ProductEntity.fromObject(product);
     }
 
