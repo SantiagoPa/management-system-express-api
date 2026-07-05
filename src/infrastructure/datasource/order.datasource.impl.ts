@@ -57,6 +57,7 @@ export class OrderDatasourceImpl implements OrderDatasource {
 
 
         if (type_action === "recibir" && order.estado === "APROBADA") {
+
             const order = await prisma.purchaseOrder.update({
                 where: { id: id },
                 data: {
@@ -64,21 +65,26 @@ export class OrderDatasourceImpl implements OrderDatasource {
                 }
             });
 
-            const promiseProduct = prisma.producto.update({
-                where: { id: order.producto_id },
-                data: {
-                    stock_actual: order.cantidad_solicitada,
-                }
-            });
+            const product = await prisma.producto.findUnique({ where: { id: order.producto_id } })
 
-            const promiseAlert = prisma.alerts.update({
-                where: { producto_id: order.producto_id },
-                data: {
-                    estado: "RESUELTA"
-                }
-            });
+            if (product) {
+                const promiseProduct = prisma.producto.update({
+                    where: { id: order.producto_id },
+                    data: {
+                        stock_actual: product.stock_actual + order.cantidad_solicitada,
+                    }
+                });
 
-            await Promise.all([promiseProduct, promiseAlert]);
+                const promiseAlert = prisma.alerts.update({
+                    where: { producto_id: order.producto_id },
+                    data: {
+                        estado: "RESUELTA",
+                        descripcion: `Alerta resuelta`,
+                    }
+                });
+
+                await Promise.all([promiseProduct, promiseAlert]);
+            }
 
             return OrderEntity.fromObject(order);
         }
