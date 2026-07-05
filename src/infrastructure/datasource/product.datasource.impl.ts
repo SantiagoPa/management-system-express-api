@@ -166,21 +166,6 @@ export class ProductDatasourceImpl implements ProductDatasource {
         return ProductExtendedEntity.fromObject(product);
     }
 
-    async updateById(id: number): Promise<ProductEntity> {
-        throw new Error("Method not implemented.");
-    }
-
-    async deleteById(id: number): Promise<ProductEntity> {
-        await this.findById(id);
-        const product = await prisma.producto.update({
-            where: { id },
-            data: {
-                activo: false
-            }
-        });
-        return ProductEntity.fromObject(product);
-    }
-
     async seed(): Promise<string> {
         await prisma.producto.deleteMany();
         const products = await prisma.producto.createMany({
@@ -188,5 +173,16 @@ export class ProductDatasourceImpl implements ProductDatasource {
         });
         return `SEED DE PRODUCTOS EJECUTADO, CANTIDAD DE PRODUCTOS CREADOS: ${products.count}`
     }
+
+    // async deleteById(id: number): Promise<ProductEntity> {
+    //     await this.findById(id);
+    //     const product = await prisma.producto.update({
+    //         where: { id },
+    //         data: {
+    //             activo: false
+    //         }
+    //     });
+    //     return ProductEntity.fromObject(product);
+    // }
 
 }

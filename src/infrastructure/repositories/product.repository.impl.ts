@@ -30,8 +30,8 @@ export class ProductRepositoryImpl implements ProductRepository {
         return this.datasource.updateAmountById(updateAmountProductDto);
     }
 
-    deleteById(id: number): Promise<ProductEntity> {
-        return this.datasource.deleteById(id);
-    }
+    // deleteById(id: number): Promise<ProductEntity> {
+    //     return this.datasource.deleteById(id);
+    // }
 
 }

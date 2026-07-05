@@ -7,12 +7,10 @@ import type { ProductEntity } from "../entities/product.entity.ts";
 export abstract class ProductDatasource {
 
     abstract create(createProductDto: CreateProductDto): Promise<ProductEntity>;
-
-    // todo: pagination
     abstract getAll(filterProductDto: FilterProductDto): Promise<ProductExtendedEntity[]>;
     abstract findById(id: number): Promise<ProductExtendedEntity>;
     abstract updateAmountById(updateAmountProductDto: UpdateAmountProductDto): Promise<ProductEntity>;
-    abstract deleteById(id: number): Promise<ProductEntity>;
     abstract seed(): Promise<string>;
+    // abstract deleteById(id: number): Promise<ProductEntity>;
 
 }

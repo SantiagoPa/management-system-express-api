@@ -1,7 +1,6 @@
 
 import z from 'zod';
 import { formatErrrorsSchemasZod } from '../../../utils/formatErrrorsSchemasZod.ts';
-import type { StatusPurchaseOrder } from '../../../generated/prisma/enums.ts';
 
 const orderSchema = z.object({
     "producto_id": z.number("El 'producto_id' debe ser numerico"),
