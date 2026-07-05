@@ -5,6 +5,7 @@ import { UpdateAmountProductDto } from "../../domain/dtos/products/update-amount
 import { UpdateAmountProduct } from "../../domain/use-cases/products/update-amount-product.ts";
 import { FilterProductDto } from "../../domain/dtos/products/filter-product.dto.ts";
 import { PrismaClientKnownRequestError } from "../../generated/prisma/internal/prismaNamespace.ts";
+import { CustomError } from "../../domain/error/custom-error.ts";
 
 export class ProductsController {
 
@@ -18,11 +19,7 @@ export class ProductsController {
         const [errors, filterProductDto] = FilterProductDto.create(req.query);
 
         if (errors) {
-            return res.status(400).json({
-                data: null,
-                success: false,
-                errors,
-            });
+            return res.status(400).json({ errors });
         }
 
         new GetProducts(this.repository)
@@ -44,11 +41,7 @@ export class ProductsController {
         const [errors, createProductDto] = CreateProductDto.create(req.body);
 
         if (errors) {
-            return res.status(400).json({
-                data: null,
-                success: false,
-                errors,
-            });
+            return res.status(400).json({ errors });
         }
 
         new CreateProduct(this.repository)
@@ -70,11 +63,7 @@ export class ProductsController {
         const [errors, updateAmountProductDto] = UpdateAmountProductDto.create({ ...req.body, id });
 
         if (errors) {
-            return res.status(400).json({
-                data: null,
-                success: false,
-                errors,
-            });
+            return res.status(400).json({ errors });
         }
 
         new UpdateAmountProduct(this.repository)
@@ -93,6 +82,10 @@ export class ProductsController {
                     error: `El ${constraint.fields[0]} que enviaste ya existe!`
                 })
             }
+        }
+
+        if (error instanceof CustomError) {
+            return res.status(error.statusCode).json({ error: error.message });
         }
         console.error(error);
         res.status(500).json({ error: "Error interno del servidor" });

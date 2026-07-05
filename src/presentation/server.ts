@@ -1,5 +1,5 @@
 
-import express, { type Router } from 'express';
+import express, { type Router, type Express } from 'express';
 import compression from 'compression';
 interface Props {
     port: number;
@@ -9,7 +9,8 @@ interface Props {
 
 export class Server {
 
-    private app = express();
+    public readonly app: Express = express();
+    private serverListener?: any; 
     private readonly port: number;
     private readonly publicPath: string;
     private readonly routes: Router;
@@ -22,12 +23,12 @@ export class Server {
     async start() {
 
         //* Middleware
-        this.app.use( express.json() ); // raw
-        this.app.use( express.urlencoded({ extended: true }) ); // x-www-form-urlencoded
-        this.app.use( compression() ); // x-www-form-urlencoded
+        this.app.use(express.json()); // raw
+        this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
+        this.app.use(compression()); // x-www-form-urlencoded
 
         //* Public Folder
-        this.app.use(express.static( this.publicPath ));
+        this.app.use(express.static(this.publicPath));
 
         // this.app.get('*', (req, res)=>{
         //     const indexPath = path.join(__dirname + `../../../${this.publicPath}/index.html`);
@@ -37,6 +38,10 @@ export class Server {
         //* Routes
         this.app.use(this.routes);
 
-        this.app.listen(this.port, () => console.log(`Server running on port: ${this.port}`));
+        this.serverListener = this.app.listen(this.port, () => console.log(`Server running on port: ${this.port}`));
+    }
+
+    public close(){
+        this.serverListener?.close();
     }
 }

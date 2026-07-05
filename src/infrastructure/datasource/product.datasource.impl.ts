@@ -6,6 +6,7 @@ import { ProductEntity, type CreateProductDto, type ProductDatasource } from "..
 import type { FilterProductDto } from "../../domain/dtos/products/filter-product.dto.ts";
 import type { UpdateAmountProductDto } from "../../domain/dtos/products/update-amount-prodcut.dto.ts";
 import type { Prisma } from "../../generated/prisma/client.ts";
+import { CustomError } from "../../domain/error/custom-error.ts";
 
 export class ProductDatasourceImpl implements ProductDatasource {
 
@@ -64,7 +65,7 @@ export class ProductDatasourceImpl implements ProductDatasource {
             // salida
             const subtraction = product.stock_actual - cantidad;
 
-            if (subtraction < 0) throw `La cantidad a de salida (${cantidad}) es mayor al stock actual (${product.stock_actual})`;
+            if (subtraction < 0) throw new CustomError(400, `La cantidad a de salida (${cantidad}) es mayor al stock actual (${product.stock_actual})`);
 
 
             const promiseUpdate = prisma.producto.update({
@@ -153,20 +154,16 @@ export class ProductDatasourceImpl implements ProductDatasource {
     }
 
     async findById(id: number): Promise<ProductExtendedEntity> {
-        try {
-            const product = await prisma.producto.findFirst({
-                where: { id },
-                include: {
-                    historial: true,
-                    alertas: true,
-                    ordenes_compra: true
-                }
-            });
-            if (!product) throw `Producto con el id: ${id} no fue encontrado`;
-            return ProductExtendedEntity.fromObject(product);
-        } catch (error) {
-            throw error
-        }
+        const product = await prisma.producto.findFirst({
+            where: { id },
+            include: {
+                historial: true,
+                alertas: true,
+                ordenes_compra: true
+            }
+        });
+        if (!product) throw new CustomError(400, `Producto con el id: ${id} no fue encontrado`);
+        return ProductExtendedEntity.fromObject(product);
     }
 
     async updateById(id: number): Promise<ProductEntity> {

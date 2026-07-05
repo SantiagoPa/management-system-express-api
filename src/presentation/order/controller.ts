@@ -12,11 +12,7 @@ export class OrderController {
         const [errors, createOrderDto] = CreateOrderDto.create(req.body);
 
         if (errors) {
-            return res.status(400).json({
-                data: null,
-                success: false,
-                errors,
-            });
+            return res.status(400).json({ errors });
         }
 
         new CreateOrder(this.repository)
@@ -30,11 +26,7 @@ export class OrderController {
         const [errors, updateStatusOrderDto] = UpdateStatusOrderDto.create({ ...req.body, id });
 
         if (errors) {
-            return res.status(400).json({
-                data: null,
-                success: false,
-                errors,
-            });
+            return res.status(400).json({ errors });
         }
 
         new UpdateStatusOrder(this.repository)

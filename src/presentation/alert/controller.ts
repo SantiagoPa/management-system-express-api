@@ -12,11 +12,7 @@ export class AlertController {
         const [errors, filterAlertDto] = FilterAlertDto.create(req.query);
 
         if (errors) {
-            return res.status(400).json({
-                data: null,
-                success: false,
-                errors,
-            });
+            return res.status(400).json({ errors });
         }
 
         new GetAlerts(this.repository)
