@@ -3,9 +3,9 @@ import { Server } from "../src/presentation/server.ts";
 
 vitest.mock('../src/presentation/server.ts');
 
-describe("should call server with arguments and start", () => {
+describe("debe llamar al servidos con argumentos y arrancar", () => {
 
-    test("should work", async () => {
+    test("debe trabajar el servidor", async () => {
 
         await import("../src/app.ts");
         expect(Server).toHaveBeenCalledTimes(1);

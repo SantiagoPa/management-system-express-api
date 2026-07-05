@@ -77,7 +77,7 @@ export class ProductsController {
         if (error instanceof PrismaClientKnownRequestError) {
             // @ts-expect-error - Prisma no tipa driverAdapterError.cause correctamente
             const { originalCode, constraint } = error.meta?.driverAdapterError?.cause;
-            if (originalCode === "23505") {
+            if (originalCode && originalCode === "23505" && constraint?.fields) {
                 return res.status(400).json({
                     error: `El ${constraint.fields[0]} que enviaste ya existe!`
                 })

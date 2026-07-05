@@ -22,7 +22,7 @@ describe("Testing in alert routes", () => {
 
     const [product1] = seedProductsData;
 
-    test("should return empty array when no alerts exist /api/alerts", async () => {
+    test("debe retornar un arreglo vacío cuando no existen alertas /api/alerts", async () => {
 
         const { body } = await request(testServer.app)
             .get("/api/alerts")
@@ -32,7 +32,22 @@ describe("Testing in alert routes", () => {
         expect(body.length).toBe(0);
     });
 
-    test("should return all ALERTS /api/alerts", async () => {
+    test("debe retornar un error por enviar mal los filtros /api/alerts", async () => {
+
+        const { body } = await request(testServer.app)
+            .get("/api/alerts")
+            .query({ estado_alerta: "" })
+            .expect(400);
+
+        expect(body).toEqual({
+            errors: [
+                "estado_alerta: El 'estado_alerta' debe ser 'ACTIVA' o 'RESUELTA'"
+            ]
+        })
+    });
+
+
+    test("debe retornar todas las alertas /api/alerts", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
 
@@ -61,7 +76,7 @@ describe("Testing in alert routes", () => {
         expect(body.length).toBe(2);
     });
 
-    test("should return only ACTIVA alerts when filtering by estado_alerta=ACTIVA /api/alerts", async () => {
+    test("debe retornar únicamente las alertas ACTIVAS al filtrar por estado_alerta=ACTIVA /api/alerts", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
 
@@ -91,7 +106,7 @@ describe("Testing in alert routes", () => {
         expect(body[0].estado).toBe("ACTIVA");
     });
 
-    test("should return only RESUELTA alerts when filtering by estado_alerta=RESUELTA /api/alerts", async () => {
+    test("debe retornar únicamente las alertas RESUELTAS al filtrar por estado_alerta=RESUELTA /api/alerts", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
 
@@ -121,7 +136,7 @@ describe("Testing in alert routes", () => {
         expect(body[0].estado).toBe("RESUELTA");
     });
 
-    test("should return 400 with validation error for invalid estado_alerta /api/alerts", async () => {
+    test("debe retornar un error 400 cuando estado_alerta tiene un valor inválido /api/alerts", async () => {
 
         const { body } = await request(testServer.app)
             .get("/api/alerts?estado_alerta=INVALIDO")
@@ -134,7 +149,7 @@ describe("Testing in alert routes", () => {
         });
     });
 
-    test("should return alert with expected fields /api/alerts", async () => {
+    test("debe retornar una alerta con la estructura esperada /api/alerts", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
 

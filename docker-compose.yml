@@ -1,20 +1,21 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
-  management-system-api:
-    build:
-      context: .
-      target: ${STAGE}
-      dockerfile: Dockerfile
-    volumes: []
-    container_name: management-system-api
-    ports:
-      - ${PORT}:${PORT}
-    environment:
-      PORT: ${PORT}
-      STAGE: ${STAGE}
-      NODE_ENV: ${NODE_ENV}
+  # management-system-api:
+  #   build:
+  #     context: .
+  #     target: ${STAGE}
+  #     dockerfile: Dockerfile
+  #   volumes: []
+  #   container_name: management-system-api
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   environment:
+  #     PORT: ${PORT}
+  #     STAGE: ${STAGE}
+  #     NODE_ENV: ${NODE_ENV}
+  #   depends_on:
+  #     - postgres-db
 
   postgres-db:
     image: postgres:16.14

@@ -1,10 +1,8 @@
 import { CreateOrderDto, UpdateStatusOrderDto } from "../../../../src/domain/index.ts";
 
-
 describe("Dtos domain/dtos/order testing", () => {
 
-
-    it("should return array string error - does not provide the payload [CreateOrderDto]", () => {
+    it("debe retornar un arreglo de errores - no se proporcionó un payload válido [CreateOrderDto]", () => {
 
         const [error] = CreateOrderDto.create({});
 
@@ -16,7 +14,7 @@ describe("Dtos domain/dtos/order testing", () => {
         );
     });
 
-    it("should return array string error - cantidad_solicitada is not positive [CreateOrderDto]", () => {
+    it("debe retornar un arreglo de errores - cantidad_solicitada debe ser mayor a 0 [CreateOrderDto]", () => {
 
         const [error] = CreateOrderDto.create({ producto_id: 1, cantidad_solicitada: -5 });
 
@@ -27,7 +25,7 @@ describe("Dtos domain/dtos/order testing", () => {
         );
     });
 
-    it("should return undefined error and a CreateOrderDto instance - provides a valid payload [CreateOrderDto]", () => {
+    it("debe retornar un error indefinido y una instancia de CreateOrderDto - se proporciona un payload válido [CreateOrderDto]", () => {
 
         const [error, dto] = CreateOrderDto.create({ producto_id: 1, cantidad_solicitada: 10 });
 
@@ -38,7 +36,7 @@ describe("Dtos domain/dtos/order testing", () => {
     });
 
 
-    it("should return array string error - does not provide the payload [UpdateStatusOrderDto]", () => {
+    it("debe retornar un arreglo de errores - no se proporcionó un payload válido [UpdateStatusOrderDto]", () => {
 
         const [error] = UpdateStatusOrderDto.create({});
 
@@ -50,7 +48,7 @@ describe("Dtos domain/dtos/order testing", () => {
         );
     });
 
-    it("should return array string error - type_action is invalid [UpdateStatusOrderDto]", () => {
+    it("debe retornar un arreglo de errores - type_action tiene un valor inválido [UpdateStatusOrderDto]", () => {
 
         const [error] = UpdateStatusOrderDto.create({ id: "abc-123", type_action: "cancelar" });
 
@@ -61,7 +59,7 @@ describe("Dtos domain/dtos/order testing", () => {
         );
     });
 
-    it("should return array string error - motivo is required when type_action is rechazar [UpdateStatusOrderDto]", () => {
+    it("debe retornar un arreglo de errores - motivo es requerido cuando type_action es rechazar [UpdateStatusOrderDto]", () => {
 
         const [error] = UpdateStatusOrderDto.create({ id: "abc-123", type_action: "rechazar" });
 
@@ -72,7 +70,7 @@ describe("Dtos domain/dtos/order testing", () => {
         );
     });
 
-    it("should return array string error - motivo is too short when type_action is rechazar [UpdateStatusOrderDto]", () => {
+    it("debe retornar un arreglo de errores - motivo debe tener al menos 10 caracteres cuando type_action es rechazar [UpdateStatusOrderDto]", () => {
 
         const [error] = UpdateStatusOrderDto.create({ id: "abc-123", type_action: "rechazar", motivo: "corto" });
 
@@ -83,7 +81,7 @@ describe("Dtos domain/dtos/order testing", () => {
         );
     });
 
-    it("should return undefined error and a UpdateStatusOrderDto instance - aprobar without motivo [UpdateStatusOrderDto]", () => {
+    it("debe retornar un error indefinido y una instancia de UpdateStatusOrderDto - se aprueba la orden sin motivo [UpdateStatusOrderDto]", () => {
 
         const [error, dto] = UpdateStatusOrderDto.create({ id: "abc-123", type_action: "aprobar" });
 
@@ -94,9 +92,13 @@ describe("Dtos domain/dtos/order testing", () => {
         expect(dto?.motivo).toBeUndefined();
     });
 
-    it("should return undefined error and a UpdateStatusOrderDto instance - rechazar with valid motivo [UpdateStatusOrderDto]", () => {
+    it("debe retornar un error indefinido y una instancia de UpdateStatusOrderDto - se rechaza la orden con un motivo válido [UpdateStatusOrderDto]", () => {
 
-        const [error, dto] = UpdateStatusOrderDto.create({ id: "abc-123", type_action: "rechazar", motivo: "El producto no cumple con los requisitos de calidad" });
+        const [error, dto] = UpdateStatusOrderDto.create({
+            id: "abc-123",
+            type_action: "rechazar",
+            motivo: "El producto no cumple con los requisitos de calidad"
+        });
 
         expect(error).toBeUndefined();
         expect(dto).toBeInstanceOf(UpdateStatusOrderDto);
@@ -104,7 +106,7 @@ describe("Dtos domain/dtos/order testing", () => {
         expect(dto?.motivo).toBe("El producto no cumple con los requisitos de calidad");
     });
 
-    it("should return undefined error and a UpdateStatusOrderDto instance - recibir without motivo [UpdateStatusOrderDto]", () => {
+    it("debe retornar un error indefinido y una instancia de UpdateStatusOrderDto - se recibe la orden sin motivo [UpdateStatusOrderDto]", () => {
 
         const [error, dto] = UpdateStatusOrderDto.create({ id: "abc-123", type_action: "recibir" });
 

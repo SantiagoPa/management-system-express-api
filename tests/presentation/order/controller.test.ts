@@ -6,15 +6,15 @@ describe("OrderController", () => {
     const mockRepository = {} as OrderRepository;
     const controller = new OrderController(mockRepository);
 
-    it("should be defined", () => {
+    it("debe estar definido", () => {
         expect(controller).toBeDefined();
     });
 
-    it("should be an instance of OrderController", () => {
+    it("debe ser una instancia de OrderController", () => {
         expect(controller).toBeInstanceOf(OrderController);
     });
 
-    it("should expose 2 public methods (createOrder, updateStatusOrder)", () => {
+    it("debe exponer dos métodos públicos (createOrder, updateStatusOrder)", () => {
         const publicMethods = ["createOrder", "updateStatusOrder"];
         expect(publicMethods).toHaveLength(2);
         publicMethods.forEach(method => {

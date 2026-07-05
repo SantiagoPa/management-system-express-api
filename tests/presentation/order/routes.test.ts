@@ -22,7 +22,7 @@ describe("Testing in order routes", () => {
 
     const [product1] = seedProductsData;
 
-    test("should return a new ORDER /api/orders", async () => {
+    test("debe crear una nueva orden /api/orders", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
 
@@ -43,7 +43,7 @@ describe("Testing in order routes", () => {
         });
     });
 
-    test("should return 400 with validation errors - empty payload /api/orders", async () => {
+    test("debe retornar un error 400 con errores de validación cuando el payload está vacío /api/orders", async () => {
 
         const { body } = await request(testServer.app)
             .post("/api/orders")
@@ -58,7 +58,7 @@ describe("Testing in order routes", () => {
         });
     });
 
-    test("should return 400 with validation error - cantidad_solicitada is not positive /api/orders", async () => {
+    test("debe retornar un error 400 cuando cantidad_solicitada no es mayor a 0 /api/orders", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
 
@@ -74,7 +74,7 @@ describe("Testing in order routes", () => {
         });
     });
 
-    test("should return 400 error - product does not exist /api/orders", async () => {
+    test("debe retornar un error 400 cuando el producto no existe /api/orders", async () => {
 
         const { body } = await request(testServer.app)
             .post("/api/orders")
@@ -84,7 +84,7 @@ describe("Testing in order routes", () => {
         expect(body).toHaveProperty("error");
     });
 
-    test("should approve a PENDING ORDER /api/orders/:id", async () => {
+    test("debe aprobar una orden en estado PENDIENTE /api/orders/:id", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
         const order = await prisma.purchaseOrder.create({
@@ -107,7 +107,7 @@ describe("Testing in order routes", () => {
         });
     });
 
-    test("should reject a PENDING ORDER with motivo /api/orders/:id", async () => {
+    test("debe rechazar una orden en estado PENDIENTE con un motivo válido /api/orders/:id", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
         const order = await prisma.purchaseOrder.create({
@@ -131,7 +131,7 @@ describe("Testing in order routes", () => {
         });
     });
 
-    test("should receive an APPROVED ORDER /api/orders/:id", async () => {
+    test("debe recibir una orden en estado APROBADA /api/orders/:id", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
         const order = await prisma.purchaseOrder.create({
@@ -154,7 +154,7 @@ describe("Testing in order routes", () => {
         });
     });
 
-    test("should return 400 - type_action is required /api/orders/:id", async () => {
+    test("debe retornar un error 400 cuando type_action es requerido /api/orders/:id", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
         const order = await prisma.purchaseOrder.create({
@@ -178,7 +178,7 @@ describe("Testing in order routes", () => {
         });
     });
 
-    test("should return 400 - motivo is required when rejecting /api/orders/:id", async () => {
+    test("debe retornar un error 400 cuando motivo es requerido al rechazar una orden /api/orders/:id", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
         const order = await prisma.purchaseOrder.create({
@@ -202,7 +202,7 @@ describe("Testing in order routes", () => {
         });
     });
 
-    test("should return 400 - motivo too short when rejecting /api/orders/:id", async () => {
+    test("debe retornar un error 400 cuando motivo tiene menos de 10 caracteres al rechazar una orden /api/orders/:id", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
         const order = await prisma.purchaseOrder.create({
@@ -226,7 +226,7 @@ describe("Testing in order routes", () => {
         });
     });
 
-    test("should return 400 - invalid type_action /api/orders/:id", async () => {
+    test("debe retornar un error 400 cuando type_action tiene un valor inválido /api/orders/:id", async () => {
 
         const product = await prisma.producto.create({ data: product1! });
         const order = await prisma.purchaseOrder.create({
@@ -250,7 +250,7 @@ describe("Testing in order routes", () => {
         });
     });
 
-    test("should return 400 error - order does not exist /api/orders/:id", async () => {
+    test("debe retornar un error 400 cuando la orden no existe /api/orders/:id", async () => {
 
         const { body } = await request(testServer.app)
             .put("/api/orders/orden-inexistente-uuid-99999")

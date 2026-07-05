@@ -6,15 +6,15 @@ describe("AlertController", () => {
     const mockRepository = {} as AlertRepository;
     const controller = new AlertController(mockRepository);
 
-    it("should be defined", () => {
+    it("debe estar definido", () => {
         expect(controller).toBeDefined();
     });
 
-    it("should be an instance of AlertController", () => {
+    it("debe ser una instancia de AlertController", () => {
         expect(controller).toBeInstanceOf(AlertController);
     });
 
-    it("should expose 1 public method (getAll)", () => {
+    it("debe exponer un único método público (getAll)", () => {
         const publicMethods = ["getAll"];
         expect(publicMethods).toHaveLength(1);
         publicMethods.forEach(method => {

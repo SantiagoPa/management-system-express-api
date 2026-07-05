@@ -1,6 +1,7 @@
 FROM node:22-alpine3.21 AS dev
 WORKDIR /app
 COPY package.json ./
+COPY pnpm-workspace.yaml ./
 RUN npm install -g pnpm
 CMD ["pnpm", "run", "dev"]
 

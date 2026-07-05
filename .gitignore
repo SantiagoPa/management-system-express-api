@@ -7,3 +7,6 @@ postgres/
 /src/generated/prisma
 
 /coverage
+
+.pnpm-store/
+.pnpm-store/.pnpm-needs-build-marker
