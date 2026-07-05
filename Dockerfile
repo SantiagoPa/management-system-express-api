@@ -20,6 +20,7 @@ WORKDIR /app
 RUN npm install -g pnpm
 COPY . .
 COPY --from=deps-dev /app/node_modules ./node_modules
+RUN pnpm exec prisma generate
 RUN pnpm run build
 
 
