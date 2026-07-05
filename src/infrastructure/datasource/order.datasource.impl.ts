@@ -28,13 +28,13 @@ export class OrderDatasourceImpl implements OrderDatasource {
     }
 
     async updateStatus(updateOrderDto: UpdateStatusOrderDto): Promise<OrderEntity> {
-        const { id, type_action } = updateOrderDto;
+        const { id, type_action, motivo } = updateOrderDto;
 
         const order = await prisma.purchaseOrder.findUnique({ where: { id } });
 
         if (!order) throw `Orden de compra con el id: ${id} no existe!`
 
-        if (type_action === "aprobar") {
+        if (type_action === "aprobar" && order.estado === "PENDIENTE") {
             const order = await prisma.purchaseOrder.update({
                 where: { id: id },
                 data: {
@@ -44,18 +44,19 @@ export class OrderDatasourceImpl implements OrderDatasource {
             return OrderEntity.fromObject(order);
         }
 
-        if (type_action === "rechazar") {
+        if (type_action === "rechazar" && order.estado === "PENDIENTE") {
             const order = await prisma.purchaseOrder.update({
                 where: { id: id },
                 data: {
-                    estado: "RECHAZADA"
+                    estado: "RECHAZADA",
+                    motivo: motivo ?? null
                 }
             });
             return OrderEntity.fromObject(order);
         }
 
 
-        if (type_action === "recibir") {
+        if (type_action === "recibir" && order.estado === "APROBADA") {
             const order = await prisma.purchaseOrder.update({
                 where: { id: id },
                 data: {

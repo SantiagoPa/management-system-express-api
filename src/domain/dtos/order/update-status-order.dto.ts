@@ -7,6 +7,17 @@ const orderSchema = z.object({
     "type_action": z.enum(["aprobar", "rechazar", "recibir"], {
         message: "El 'typeAction' debe ser 'aprobar', 'rechazar' o 'recibir'"
     }),
+    "motivo": z.string("El 'motivo' debe ser texto")
+        .min(10, { message: "Minimo deben ser 10 caracteres" })
+        .optional()
+}).superRefine((data, ctx) => {
+    if (data.type_action === "rechazar" && !data.motivo) {
+        ctx.addIssue({
+            code: "custom",
+            message: "El 'motivo' es requerido cuando se rechaza",
+            path: ["motivo"],
+        });
+    }
 });
 
 export class UpdateStatusOrderDto {
@@ -14,6 +25,7 @@ export class UpdateStatusOrderDto {
     private constructor(
         public readonly id: string,
         public readonly type_action: "aprobar" | "rechazar" | "recibir",
+        public readonly motivo?: string,
     ) { }
 
     static create(props: Record<string, any>): [string[] | undefined, UpdateStatusOrderDto?] {
@@ -22,7 +34,7 @@ export class UpdateStatusOrderDto {
             const errors = formatErrrorsSchemasZod(JSON.parse(result.error.message));
             return [errors];
         }
-        const { producto_id, cantidad_solicitada } = props;
-        return [undefined, new UpdateStatusOrderDto(producto_id, cantidad_solicitada)];
+        const { id, type_action, motivo } = props;
+        return [undefined, new UpdateStatusOrderDto(id, type_action, motivo)];
     }
 }

@@ -26,7 +26,7 @@ export class OrderController {
     }
 
     public updateStatusOrder = async (req: Request, res: Response) => {
-        const id = Number(req.params.id);
+        const id = req.params.id;
         const [errors, updateStatusOrderDto] = UpdateStatusOrderDto.create({ ...req.body, id });
 
         if (errors) {

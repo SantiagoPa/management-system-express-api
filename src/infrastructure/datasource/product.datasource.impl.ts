@@ -43,13 +43,17 @@ export class ProductDatasourceImpl implements ProductDatasource {
             const [newProduct] = await Promise.all([promiseUpdate, promiseHistory]);
 
             if (addition > product.stock_minimo) {
-                await prisma.alerts.update({
-                    where: { producto_id: product.id },
-                    data: {
-                        estado: "RESUELTA",
-                        descripcion: `Alerta resuleta!`,
-                    }
-                })
+                
+                const alert = await prisma.alerts.findUnique({ where: { producto_id: product.id } });
+                if (alert) {
+                    await prisma.alerts.updateMany({
+                        where: { producto_id: product.id },
+                        data: {
+                            estado: "RESUELTA",
+                            descripcion: `Alerta resuleta!`,
+                        },
+                    })
+                }
             }
 
             return ProductEntity.fromObject(newProduct);
@@ -138,11 +142,11 @@ export class ProductDatasourceImpl implements ProductDatasource {
                 }
             });
             if (!product) throw `Producto con el id: ${id} no fue encontrado`;
-            console.log({ product })
+            console.log({ product, order: product.ordenes_compra });
             return ProductExtendedEntity.fromObject(product);
         } catch (error) {
             console.log({ error });
-            throw `Producto con el id: ${id} no fue encontrado`;
+            throw error
         }
     }
 
