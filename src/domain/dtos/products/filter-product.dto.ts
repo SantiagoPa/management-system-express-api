@@ -6,8 +6,9 @@ import { formatErrrorsSchemasZod } from '../../../utils/formatErrrorsSchemasZod.
 const filterProductSchema = z.object({
     "categoria": z.enum(["Bebidas", "Lacteos", "Snacks", "Limpieza", "Frutas", "Granos"], {
         message: "La 'categoria' debe ser una de las siguientes opciones: Bebidas, Lacteos, Snacks, Limpieza, Frutas, Granos"
-    }),
-    "proveedor": z.string("El 'proveedor' debe venir en formato texto").optional(),
+    }).optional(),
+    "proveedor"
+    : z.string("El 'proveedor' debe venir en formato texto").optional(),
     "estado_alerta": z.enum(["ACTIVA", "RESUELTA"], {
         message: "El 'estado_alerta' debe ser 'ACTIVA' o 'RESUELTA'"
     }).optional(),

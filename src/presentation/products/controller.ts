@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
-import { prisma } from "../../data/postgres/index.ts";
 import { CreateProductDto } from "../../domain/dtos/products/create-product.dto.ts";
 import { CreateProduct, GetProduct, GetProducts, SeedProduct, type ProductRepository } from "../../domain/index.ts";
 import { UpdateAmountProductDto } from "../../domain/dtos/products/update-amount-prodcut.dto.ts";
 import { UpdateAmountProduct } from "../../domain/use-cases/products/update-amount-product.ts";
 import { FilterProductDto } from "../../domain/dtos/products/filter-product.dto.ts";
+import { PrismaClientKnownRequestError } from "../../generated/prisma/internal/prismaNamespace.ts";
 
 export class ProductsController {
 
@@ -28,7 +28,7 @@ export class ProductsController {
         new GetProducts(this.repository)
             .execute(filterProductDto!)
             .then(products => res.json(products))
-            .catch(error => res.status(400).json({ error }));
+            .catch(error => this.handleError(error, res));
     }
 
     public getProductById = (req: Request, res: Response) => {
@@ -36,7 +36,7 @@ export class ProductsController {
         new GetProduct(this.repository)
             .execute(id)
             .then(product => res.json(product))
-            .catch(error => res.status(400).json({ error }))
+            .catch(error => this.handleError(error, res))
     }
 
     public createProduct = async (req: Request, res: Response) => {
@@ -54,7 +54,7 @@ export class ProductsController {
         new CreateProduct(this.repository)
             .execute(createProductDto!)
             .then(product => res.json(product))
-            .catch(error => res.status(400).json({ error }))
+            .catch(error => this.handleError(error, res))
     }
 
     public seedProducts = async (req: Request, res: Response) => {
@@ -62,7 +62,7 @@ export class ProductsController {
         new SeedProduct(this.repository)
             .execute()
             .then(product => res.json(product))
-            .catch(error => res.status(400).json({ error }))
+            .catch(error => this.handleError(error, res))
     }
 
     public inventoryAdjustment = async (req: Request, res: Response) => {
@@ -80,8 +80,22 @@ export class ProductsController {
         new UpdateAmountProduct(this.repository)
             .execute(updateAmountProductDto!)
             .then(product => res.json(product))
-            .catch(error => res.status(400).json({ error }))
+            .catch(error => this.handleError(error, res))
 
+    }
+
+    private handleError = (error: unknown, res: Response) => {
+        if (error instanceof PrismaClientKnownRequestError) {
+            // @ts-expect-error - Prisma no tipa driverAdapterError.cause correctamente
+            const { originalCode, constraint } = error.meta?.driverAdapterError?.cause;
+            if (originalCode === "23505") {
+                return res.status(400).json({
+                    error: `El ${constraint.fields[0]} que enviaste ya existe!`
+                })
+            }
+        }
+        console.error(error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 
 }
