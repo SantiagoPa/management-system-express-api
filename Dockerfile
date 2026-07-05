@@ -26,6 +26,7 @@ RUN pnpm run build
 
 FROM node:22-alpine3.21 AS prod
 WORKDIR /app
+RUN npm install -g pnpm
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
-CMD ["sh", "-c", "pnpm run prisma:migrate:prod && node dist/app.js"]
+CMD ["sh", "-c", "prisma migrate deploy && prisma generate && node dist/app.js"]
