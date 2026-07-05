@@ -46,7 +46,7 @@ model ProductHistory {
   createdAt DateTime           @default(now()) @db.Timestamp
 
   // Relaciones
-  producto    Producto @relation(fields: [producto_id], references: [id])
+  producto    Producto @relation(fields: [producto_id], references: [id], onDelete: Cascade)
   producto_id Int
 
   @@map("historial_productos")
@@ -68,10 +68,9 @@ model Alerts {
   descripcion String      @db.VarChar
   createdAt   DateTime    @default(now()) @db.Timestamp
   updatedAt   DateTime?   @updatedAt @db.Timestamp
-  
 
-  producto    Producto @relation(fields: [producto_id], references: [id])
-  producto_id Int @unique
+  producto    Producto @relation(fields: [producto_id], references: [id], onDelete: Cascade)
+  producto_id Int      @unique
 
   @@map("alertas")
 }
@@ -89,10 +88,11 @@ model PurchaseOrder {
   proveedor           String              @db.VarChar
   cantidad_solicitada Int                 @db.Integer
 
+  motivo      String?   @db.VarChar
   createdAt   DateTime  @default(now()) @db.Timestamp
   updatedAt   DateTime? @updatedAt @db.Timestamp
   // Relaciones
-  producto    Producto  @relation(fields: [producto_id], references: [id])
+  producto    Producto  @relation(fields: [producto_id], references: [id], onDelete: Cascade)
   producto_id Int
 
   @@map("ordenes_compra")

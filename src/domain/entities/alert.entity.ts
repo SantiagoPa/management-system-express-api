@@ -1,20 +1,18 @@
-import type { StatusAlert } from "../../generated/prisma/enums.ts";
+import { StatusAlert, TypeAlert } from "../../generated/prisma/enums.ts"
 
-export class ProductAlertsEntity {
+export class AlertEntity {
 
     constructor(
-  
-        public readonly id: string,
-        public readonly tipo: "STOCK_BAJO",
+        public readonly id: number,
+        public readonly tipo: TypeAlert,
         public readonly estado: StatusAlert,
         public readonly descripcion: string,
         public readonly producto_id: number,
         public readonly createdAt: Date,
-        public readonly updatedAt?: Date,
-
+        public readonly updatedAt: Date,
     ) { }
 
-     public static fromObject(object: Record<string, any>): ProductAlertsEntity {
+    public static fromObject(object: Record<string, any>): AlertEntity {
         const { id, tipo, estado, descripcion, producto_id, createdAt, updatedAt } = object;
         if (!id) throw "ID es requerido";
         if (!tipo) throw "tipo es requerido";
@@ -28,7 +26,8 @@ export class ProductAlertsEntity {
             newUpdatedAt = new Date(updatedAt);
             if (isNaN(newUpdatedAt.getTime())) throw "la fecha de actualizacion del registro no es valida (updatedAt)";
         }
-        
-        return new ProductAlertsEntity(id, tipo, estado, descripcion, producto_id, createdAt, updatedAt )
+
+        return new AlertEntity(id, tipo, estado, descripcion, producto_id, createdAt, updatedAt);
     }
+
 }

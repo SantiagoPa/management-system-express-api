@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { ProductsRoutes } from "./products/routes.ts";
+import { OrderRoutes } from "./order/routes.ts";
+import { AlertRoutes } from "./alert/routes.ts";
 
 export class AppRoutes {
 
@@ -7,7 +9,9 @@ export class AppRoutes {
         const router = Router();
 
         router.use('/api/products', ProductsRoutes.routes);
-        
+        router.use('/api/orders', OrderRoutes.routes);
+        router.use('/api/alerts', AlertRoutes.routes);
+
         return router;
     }
 }

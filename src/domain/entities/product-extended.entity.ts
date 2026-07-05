@@ -1,6 +1,6 @@
-import { ProductAlertsEntity } from "./product-alerts.entity.ts";
+import { AlertEntity } from "./alert.entity.ts";
+import { OrderEntity } from "./order.entity.ts";
 import { ProductHistoryEntity } from "./product-history.entity.ts";
-import { PurchaseOrdersEntity } from "./purchase-orders.entity.ts";
 
 export class ProductExtendedEntity {
 
@@ -15,8 +15,8 @@ export class ProductExtendedEntity {
         public readonly proveedor: string,
         public readonly createdAt: Date,
         public readonly historial: ProductHistoryEntity[],
-        public readonly alertas: ProductAlertsEntity[],
-        public readonly ordenes_compra: PurchaseOrdersEntity[],
+        public readonly alertas: AlertEntity[],
+        public readonly ordenes_compra: OrderEntity[],
         public readonly updatedAt?: Date,
     ) { }
 
@@ -43,8 +43,8 @@ export class ProductExtendedEntity {
         if (!ordenes_compra) throw "ordenes_compra es requerido";
 
         const historialEntity = historial.map((history: Record<string, any>) => ProductHistoryEntity.fromObject(history));
-        const alertasEntity = alertas.map((alert: Record<string, any>) => ProductAlertsEntity.fromObject(alert));
-        const ordenesCompraEntity = ordenes_compra.map((orders: Record<string, any>) => PurchaseOrdersEntity.fromObject(orders));
+        const alertasEntity = alertas.map((alert: Record<string, any>) => AlertEntity.fromObject(alert));
+        const ordenesCompraEntity = ordenes_compra.map((orders: Record<string, any>) => OrderEntity.fromObject(orders));
 
         return new ProductExtendedEntity(id, nombre, codigo_sku, categoria, precio, stock_actual, stock_minimo, proveedor, createdAt, historialEntity, alertasEntity, ordenesCompraEntity, updatedAt)
     }

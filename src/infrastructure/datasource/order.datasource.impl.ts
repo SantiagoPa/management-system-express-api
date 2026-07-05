@@ -1,0 +1,88 @@
+import { prisma } from "../../data/postgres/index.ts";
+import { OrderEntity } from "../../domain/entities/order.entity.ts";
+import type { CreateOrderDto, OrderDatasource, UpdateStatusOrderDto } from "../../domain/index.ts";
+
+export class OrderDatasourceImpl implements OrderDatasource {
+
+    async create(createOrderDto: CreateOrderDto): Promise<OrderEntity> {
+
+        const { producto_id, cantidad_solicitada } = createOrderDto;
+        const product = await prisma.producto.findUnique({ where: { id: producto_id } });
+
+        if (!product) throw `El producto con el id: ${producto_id}, no fue encontrado`;
+
+        const minAmount = product.stock_minimo * 2;
+
+        if (!(cantidad_solicitada >= minAmount)) throw `La cantidad mínima de una orden debe ser al menos 2 veces el stock mínimo del producto (política de la empresa), stock_minimo: ${product.stock_minimo}`
+
+        const order = await prisma.purchaseOrder.create({
+            data: {
+                estado: "PENDIENTE",
+                proveedor: product.proveedor,
+                producto_id: product.id,
+                cantidad_solicitada: cantidad_solicitada
+            }
+        });
+
+        return OrderEntity.fromObject(order);
+    }
+
+    async updateStatus(updateOrderDto: UpdateStatusOrderDto): Promise<OrderEntity> {
+        const { id, type_action } = updateOrderDto;
+
+        const order = await prisma.purchaseOrder.findUnique({ where: { id } });
+
+        if (!order) throw `Orden de compra con el id: ${id} no existe!`
+
+        if (type_action === "aprobar") {
+            const order = await prisma.purchaseOrder.update({
+                where: { id: id },
+                data: {
+                    estado: "APROBADA"
+                }
+            });
+            return OrderEntity.fromObject(order);
+        }
+
+        if (type_action === "rechazar") {
+            const order = await prisma.purchaseOrder.update({
+                where: { id: id },
+                data: {
+                    estado: "RECHAZADA"
+                }
+            });
+            return OrderEntity.fromObject(order);
+        }
+
+
+        if (type_action === "recibir") {
+            const order = await prisma.purchaseOrder.update({
+                where: { id: id },
+                data: {
+                    estado: "RECIBIDA"
+                }
+            });
+
+            const promiseProduct = prisma.producto.update({
+                where: { id: order.producto_id },
+                data: {
+                    stock_actual: order.cantidad_solicitada,
+                }
+            });
+
+            const promiseAlert = prisma.alerts.update({
+                where: { producto_id: order.producto_id },
+                data: {
+                    estado: "RESUELTA"
+                }
+            });
+
+            await Promise.all([promiseProduct, promiseAlert]);
+
+            return OrderEntity.fromObject(order);
+        }
+
+        return OrderEntity.fromObject(order);
+    }
+
+}

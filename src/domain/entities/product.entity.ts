@@ -18,8 +18,8 @@ export class ProductEntity {
         const { id, nombre, codigo_sku, categoria, precio, stock_actual, stock_minimo, proveedor, createdAt, updatedAt } = object;
         if (!id) throw "ID es requerido";
         if (!nombre) throw "nombre es requerido";
-        if (!codigo_sku) throw "Id es requerido";
-        if (!categoria) throw "Id es requerido";
+        if (!codigo_sku) throw "codigo_sku es requerido";
+        if (!categoria) throw "categoria es requerido";
         if (!precio) throw "precio es requerido";
         if (!stock_actual) throw "stock_actual es requerido";
         if (!stock_minimo) throw "stock_minimo es requerido";
