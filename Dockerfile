@@ -29,4 +29,4 @@ WORKDIR /app
 RUN npm install -g pnpm
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
-CMD ["sh", "-c", "prisma migrate deploy && prisma generate && node dist/app.js"]
+CMD ["sh", "-c", "pnpm exec prisma migrate deploy && prisma generate && node dist/app.js"]
