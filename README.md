@@ -1,22 +1,77 @@
+# Sistema de Gestión de Inventarios
 
-# SISTEMA DE GESTION DE INVENTARIOS
+API REST desarrollada con **Node.js**, **Express**, **TypeScript** y **Prisma ORM** para la administración de productos, inventario, órdenes de compra y alertas de stock.
 
-## Pasos para ejecutar la api de manera local
+El proyecto fue desarrollado siguiendo los principios de **Clean Architecture**, con el objetivo de mantener una clara separación entre la lógica de negocio, la infraestructura y la capa de presentación, facilitando el mantenimiento, la escalabilidad y las pruebas.
 
-## DEV
+---
 
-- clonar el repositorio: `git clone https://github.com/SantiagoPa/management-system-express-api.git`
-- instalar dependencias con pnpm.
-    - si no tienes pnpm hay que instalarlo `npm i -g pnpm` o visita la pagina oficial para instalar [pnpm - click aqui](https://pnpm.io/es/installation)
-    - ejecutar `pnpm install`
-- requisito tener docker ya sea docker desktop o el engine de docker
-    - [instalar docker aqui](https://www.docker.com/get-started/) y [docker-compose aqui](https://docs.docker.com/compose/install/)
-    - ejecutar en consola `docker compose up --build -d` para levantar y correr una imagen postgres
-- ejecutar `pnpm run dev` para levantar el proyecto
+# Tecnologías utilizadas
 
-## Extructura del proyecto
+| Tecnología | Descripción |
+|------------|-------------|
+| Node.js 22 | Entorno de ejecución |
+| TypeScript | Lenguaje principal |
+| Express | Framework para la API REST |
+| Prisma ORM | Acceso y gestión de la base de datos |
+| PostgreSQL | Base de datos relacional |
+| Docker & Docker Compose | Contenedores para el entorno de desarrollo |
+| Zod | Validación de DTOs |
+| Vitest | Pruebas unitarias |
+| Supertest | Pruebas de integración |
+| PNPM | Gestor de paquetes |
 
+---
+
+# Arquitectura
+
+El proyecto implementa **Clean Architecture**, separando las responsabilidades en distintas capas.
+
+```text
+                HTTP Request
+                     │
+                     ▼
+             Presentation Layer
+         (Routes + Controllers)
+                     │
+                     ▼
+               Use Cases
+          (Lógica de negocio)
+                     │
+                     ▼
+          Repository Interfaces
+                     │
+                     ▼
+         Datasource Interfaces
+                     │
+                     ▼
+ Infrastructure (Prisma ORM)
+                     │
+                     ▼
+               PostgreSQL
 ```
+
+## ¿Por qué Clean Architecture?
+
+Se eligió esta arquitectura porque permite:
+
+- Separar completamente la lógica de negocio de Express y Prisma.
+- Facilitar la escritura de pruebas unitarias.
+- Reducir el acoplamiento entre capas.
+- Permitir cambiar la implementación de persistencia sin modificar la lógica de negocio.
+- Favorecer la escalabilidad y el mantenimiento del proyecto.
+
+Además, durante el desarrollo se aplicaron principios **SOLID**, especialmente:
+
+- **Single Responsibility Principle (SRP)**
+- **Dependency Inversion Principle (DIP)**
+- **Open/Closed Principle (OCP)**
+
+---
+
+# Estructura del proyecto
+
+```text
 management-system-express-api/
 ├── .env.template
 ├── .gitignore
@@ -133,3 +188,251 @@ management-system-express-api/
     └── utils/
         └── formatErrrorsSchemasZod.ts
 ```
+
+Las responsabilidades principales son:
+
+- **domain/** → Entidades, DTOs, casos de uso, contratos e interfaces.
+- **infrastructure/** → Implementaciones concretas de repositorios y datasources.
+- **presentation/** → Controladores, rutas y servidor Express.
+- **data/** → Datos iniciales (seed) y constantes.
+- **config/** → Configuración del proyecto.
+
+---
+
+# Requisitos
+
+Antes de ejecutar el proyecto debes tener instalado:
+
+- Node.js **22** o superior
+- PNPM
+- Docker
+- Docker Compose
+
+Puedes verificarlo ejecutando:
+
+```bash
+node -v
+pnpm -v
+docker -v
+docker compose version
+```
+
+---
+
+# Instalación
+
+## 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/SantiagoPa/management-system-express-api.git
+
+cd management-system-express-api
+```
+
+---
+
+## 2. Instalar dependencias
+
+```bash
+pnpm install
+```
+
+---
+
+## 3. Configurar variables de entorno
+
+Copiar el archivo:
+
+```text
+.env.template
+```
+
+como:
+
+```text
+.env
+```
+
+y completar las variables necesarias.
+
+---
+
+## 4. Levantar PostgreSQL y Correr el proyecto en local
+
+```bash
+docker compose up -d
+```
+
+---
+
+## 5. Ejecutar migraciones
+
+```bash
+pnpm run prisma:migrate:dev
+```
+
+---
+
+## 6. Ejecutar la aplicación
+
+```bash
+pnpm run dev
+```
+
+La API estará disponible en:
+
+```text
+http://localhost:3000
+```
+
+(o el puerto configurado en el archivo `.env`).
+
+---
+## 7. Documentacion uso de la API
+
+[click aqui documentacion postman](https://documenter.getpostman.com/view/25517816/2sBY4HV4pX#474b896a-c1ed-49ea-9c38-7eb69592c28c)
+---
+
+# Funcionalidades implementadas
+
+## Gestión de productos
+
+- Crear productos.
+- Consultar todos los productos.
+- Consultar un producto por ID.
+- Filtrar productos.
+- Ajustar inventario (entrada y salida).
+- Carga inicial de productos mediante Seed.
+
+## Gestión de órdenes
+
+- Crear órdenes de compra.
+- Aprobar órdenes.
+- Rechazar órdenes.
+- Recibir órdenes.
+
+## Gestión de alertas
+
+- Consultar alertas.
+- Filtrar alertas por estado.
+- Generación automática de alertas de stock bajo.
+
+---
+
+# Reglas de negocio implementadas
+
+Entre las principales reglas de negocio implementadas se encuentran:
+
+- Una orden siempre inicia en estado **PENDIENTE**.
+- Solo una orden **PENDIENTE** puede aprobarse o rechazarse.
+- Solo una orden **APROBADA** puede marcarse como recibida.
+- El rechazo de una orden requiere un motivo con mínimo **10 caracteres**.
+- La cantidad solicitada en una orden debe cumplir las restricciones definidas para el producto.
+- Al recibir una orden, el inventario del producto se actualiza automáticamente.
+- Cuando el stock alcanza valores críticos se generan alertas correspondientes.
+
+---
+
+# Validaciones
+
+La aplicación utiliza **Zod** para validar todos los DTOs de entrada.
+
+Entre las validaciones implementadas se encuentran:
+
+- Campos requeridos.
+- Tipos de datos.
+- Enumeraciones.
+- Cantidades positivas.
+- Longitudes mínimas.
+- Reglas de negocio.
+- Formatos específicos.
+
+Todas las validaciones se realizan antes de ejecutar cualquier caso de uso.
+
+---
+
+# Manejo de errores
+
+Se implementó un manejo centralizado de errores mediante:
+
+- Clase `CustomError`.
+- Validaciones con Zod.
+- Respuestas HTTP consistentes.
+- Mensajes descriptivos para el consumidor de la API.
+
+Se contemplan errores de:
+
+- Validación.
+- Reglas de negocio.
+- Recursos inexistentes.
+- Persistencia.
+
+---
+
+# Seguridad
+
+Se implementaron medidas básicas de seguridad como:
+
+- Validación estricta de todas las entradas.
+- Separación entre DTOs y entidades del dominio.
+- Uso de Prisma ORM para prevenir inyecciones SQL.
+- Manejo controlado de excepciones.
+- Exposición únicamente de la información necesaria al cliente.
+
+---
+
+# Testing
+
+El proyecto cuenta con pruebas unitarias y de integración desarrolladas con:
+
+- **Vitest**
+- **Supertest**
+
+Las pruebas cubren:
+
+- DTOs.
+- Casos de uso.
+- Controladores.
+- Endpoints.
+- Validaciones.
+- Reglas de negocio.
+
+Ejecutar todas las pruebas:
+
+```bash
+pnpm run test
+```
+
+Ejecutar reporte de cobertura:
+
+```bash
+pnpm run test:coverage
+```
+
+---
+
+# Principios de diseño aplicados
+
+Durante el desarrollo se aplicaron los siguientes principios y patrones:
+
+- Clean Architecture.
+- SOLID.
+- Repository Pattern.
+- Dependency Injection.
+- DTO Pattern.
+- Use Case Pattern.
+- Separation of Concerns.
+
+---
+
+# Base de datos
+
+La persistencia se realiza mediante **PostgreSQL** utilizando **Prisma ORM**.
+
+Las migraciones se encuentran versionadas dentro de:
+
+```text
+prisma/migrations
+```
+
+permitiendo reproducir el esquema completo de la base de datos en cualquier entorno de ejecución.
