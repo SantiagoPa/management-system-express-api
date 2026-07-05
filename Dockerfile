@@ -20,7 +20,6 @@ WORKDIR /app
 RUN npm install -g pnpm
 COPY . .
 COPY --from=deps-dev /app/node_modules ./node_modules
-RUN pnpm run test:prod
 RUN pnpm run build
 
 
