@@ -1,32 +1,39 @@
-name: Deploy mnagement-system-api
+name: CI/CD management-system-api
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  deploy:
+
+  test:
     runs-on: self-hosted
 
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
 
-      - name: Levantar contenedores
-        env:
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+      - name: Crear archivo .env.test
         run: |
-          docker rm -f management-system-api || true
-          
-          docker compose up -d --build
+          cat > .env.test << 'EOF'
+          PORT=3001
+          PUBLIC_PATH=public
+          POSTGRES_URL=postgresql://postgres:postgres@localhost:5433/system-management-test
+          NODE_ENV=test
+          EOF
 
-      - name: Running Test
-        run: |
-          pnpm run test
-          
-          pnpm run test:coverage
+      - name: Levantar Postgres de test
+        run: docker compose -f docker-compose.test.yml up -d --wait
 
-      - name: Clean docker images
-        run: |
-          # Elimina imágenes viejas para no agotar el espacio del VPS
-          docker image prune -f
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Generar cliente de Prisma
+        run: pnpm exec prisma generate
+
+      - name: Ejecutar tests con cobertura
+        run: pnpm run test:coverage
+
+      - name: Detener y limpiar contenedores de test
+        if: always()
+        run: docker compose -f docker-compose.test.yml down -v
