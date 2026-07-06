@@ -20,4 +20,13 @@ jobs:
           
           docker compose up -d --build
 
-          docker compose logs -f    
+      - name: Running Test
+        run: |
+          pnpm run test
+          
+          pnpm run test:coverage
+
+      - name: Clean docker images
+        run: |
+          # Elimina imágenes viejas para no agotar el espacio del VPS
+          docker image prune -f
