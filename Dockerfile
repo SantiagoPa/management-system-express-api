@@ -1,4 +1,4 @@
-FROM node:22-alpine3.21 AS dev
+FROM node:24-alpine AS dev
 WORKDIR /app
 COPY package.json ./
 COPY pnpm-lock.yaml ./
@@ -6,7 +6,7 @@ COPY pnpm-workspace.yaml ./
 RUN npm install -g pnpm
 CMD ["pnpm", "run", "dev"]
 
-FROM node:22-alpine3.21 AS deps-dev
+FROM node:24-alpine AS deps-dev
 RUN npm install -g pnpm
 WORKDIR /app
 COPY package.json ./
@@ -15,7 +15,7 @@ COPY pnpm-workspace.yaml ./
 RUN pnpm install
 
 
-FROM node:22-alpine3.21 AS tests
+FROM node:24-alpine AS tests
 WORKDIR /app
 RUN npm install -g pnpm
 RUN npm install -g dotenv-cli
@@ -24,7 +24,7 @@ COPY --from=deps-dev /app/node_modules ./node_modules
 RUN pnpm exec prisma generate
 RUN pnpm runt test
 
-FROM node:22-alpine3.21 AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 RUN npm install -g pnpm
 COPY . .
@@ -33,7 +33,7 @@ RUN pnpm exec prisma generate
 RUN pnpm run build
 
 
-FROM node:22-alpine3.21 AS prod
+FROM node:24-alpine AS prod
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
