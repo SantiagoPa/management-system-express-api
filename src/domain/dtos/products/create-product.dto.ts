@@ -4,7 +4,7 @@ import { formatErrrorsSchemasZod } from '../../../utils/formatErrrorsSchemasZod.
 import type { TypeCategory } from '../../../generated/prisma/enums.ts';
 
 const productSchema = z.object({
-    "nombre": z.string("El 'nombre' es requerido").min(3, "debe tener al menos 3 caracteres").max(300, "debe tener maximo 300 caracteres").nonempty("El 'nombre' es requerido"),
+    "nombre": z.string("El 'nombre' es requerido").min(3, "debe tener al menos 3 caracteres").max(100, "debe tener maximo 300 caracteres").nonempty("El 'nombre' es requerido"),
     "codigo_sku": z.string("El 'codigo_sku' es requerido").nonempty("El 'codigo_sku' es requerido").min(6, "debe tener al menos 6 caracteres").max(20, "debe tener maximo 20 caracteres"),
     "categoria": z.enum(["Bebidas", "Lacteos", "Snacks", "Limpieza", "Frutas", "Granos"], {
         message: "La 'categoria' debe ser una de las siguientes opciones: Bebidas, Lacteos, Snacks, Limpieza, Frutas, Granos"

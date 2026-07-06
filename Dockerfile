@@ -15,6 +15,15 @@ COPY pnpm-workspace.yaml ./
 RUN pnpm install
 
 
+FROM node:22-alpine3.21 AS tests
+WORKDIR /app
+RUN npm install -g pnpm
+RUN npm install -g dotenv-cli
+COPY . .
+COPY --from=deps-dev /app/node_modules ./node_modules
+RUN pnpm exec prisma generate
+RUN pnpm runt test
+
 FROM node:22-alpine3.21 AS builder
 WORKDIR /app
 RUN npm install -g pnpm

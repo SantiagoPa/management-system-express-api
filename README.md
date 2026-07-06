@@ -90,21 +90,7 @@ management-system-express-api/
 │   ├── schema.prisma
 │   └── migrations/
 │       ├── 20260703221831_init/
-│       ├── 20260703222216_map_name/
-│       ├── 20260704082217_update_product_sku/
-│       ├── 20260704083437_product_history/
-│       ├── 20260704160532_alert_and_purchases_orders/
-│       ├── 20260704160748_mappers_alert_orders/
-│       ├── 20260704164000_relation_product_alert/
-│       ├── 20260704170940_dates_alerts_orders/
-│       ├── 20260704175127_alert_one_product/
-│       ├── 20260704202346_add_motivo_order/
-│       ├── 20260705004451_delete_cascade/
-│       ├── 20260705004743_active_field_product/
-│       ├── 20260705005123_sku_unique_product/
-│       ├── 20260705052225_one_to_many_product_alert/
-│       ├── 20260705061759_add_type_catgory_in_product/
-│       └── migration_lock.toml
+│       ├── ...      
 │
 ├── public/
 │   └── index.html
@@ -295,7 +281,7 @@ http://localhost:3000
 ---
 ## 8. API desplegeda en la nube
 
-URL: `https://management-system-express-api-production.up.railway.app/api/healthy`
+URL: [`https://management-system-express-api-production.up.railway.app/api/healthy`](https://management-system-express-api-production.up.railway.app/api/healthy)
 ---
 # Funcionalidades implementadas
 
