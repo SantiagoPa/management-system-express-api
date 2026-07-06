@@ -1,0 +1,21 @@
+name: Deploy mnagement-system-api
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Levantar contenedores
+        env:
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+        run: |
+          docker rm -f management-system-api || true
+          
+          docker compose up -d --build    
