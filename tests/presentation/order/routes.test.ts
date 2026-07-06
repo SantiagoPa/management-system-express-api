@@ -173,7 +173,7 @@ describe("Testing in order routes", () => {
 
         expect(body).toEqual({
             errors: [
-                "type_action: El 'typeAction' debe ser 'aprobar', 'rechazar' o 'recibir'",
+                "type_action: El 'type_action' debe ser 'aprobar', 'rechazar' o 'recibir'",
             ]
         });
     });
@@ -245,7 +245,7 @@ describe("Testing in order routes", () => {
 
         expect(body).toEqual({
             errors: [
-                "type_action: El 'typeAction' debe ser 'aprobar', 'rechazar' o 'recibir'",
+                "type_action: El 'type_action' debe ser 'aprobar', 'rechazar' o 'recibir'",
             ]
         });
     });

@@ -12,6 +12,8 @@ export class AppRoutes {
         router.use('/api/orders', OrderRoutes.routes);
         router.use('/api/alerts', AlertRoutes.routes);
 
+        router.use('/api/healthy', (_, res)=>res.json({ health: true, message: "API online" }));
+
         return router;
     }
 }

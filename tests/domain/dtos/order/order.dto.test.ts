@@ -43,7 +43,7 @@ describe("Dtos domain/dtos/order testing", () => {
         expect(error).toEqual(
             [
                 "id: El 'id' debe ser texto",
-                "type_action: El 'typeAction' debe ser 'aprobar', 'rechazar' o 'recibir'",
+                "type_action: El 'type_action' debe ser 'aprobar', 'rechazar' o 'recibir'",
             ]
         );
     });
@@ -54,7 +54,7 @@ describe("Dtos domain/dtos/order testing", () => {
 
         expect(error).toEqual(
             [
-                "type_action: El 'typeAction' debe ser 'aprobar', 'rechazar' o 'recibir'",
+                "type_action: El 'type_action' debe ser 'aprobar', 'rechazar' o 'recibir'",
             ]
         );
     });

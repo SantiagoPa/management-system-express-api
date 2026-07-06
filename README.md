@@ -291,8 +291,12 @@ http://localhost:3000
 ## 7. Documentacion uso de la API
 
 [click aqui documentacion postman](https://documenter.getpostman.com/view/25517816/2sBY4HV4pX#474b896a-c1ed-49ea-9c38-7eb69592c28c)
----
 
+---
+## 8. API desplegeda en la nube
+
+URL: `https://management-system-express-api-production.up.railway.app/api/healthy`
+---
 # Funcionalidades implementadas
 
 ## Gestión de productos
