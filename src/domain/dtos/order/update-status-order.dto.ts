@@ -5,7 +5,7 @@ import { formatErrrorsSchemasZod } from '../../../utils/formatErrrorsSchemasZod.
 const orderSchema = z.object({
     "id": z.string("El 'id' debe ser texto").nonempty("El 'id' es requerido"),
     "type_action": z.enum(["aprobar", "rechazar", "recibir"], {
-        message: "El 'typeAction' debe ser 'aprobar', 'rechazar' o 'recibir'"
+        message: "El 'type_action' debe ser 'aprobar', 'rechazar' o 'recibir'"
     }),
     "motivo": z.string("El 'motivo' debe ser texto")
         .min(10, { message: "Minimo deben ser 10 caracteres" })

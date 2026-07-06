@@ -319,20 +319,6 @@ http://localhost:3000
 
 ---
 
-# Reglas de negocio implementadas
-
-Entre las principales reglas de negocio implementadas se encuentran:
-
-- Una orden siempre inicia en estado **PENDIENTE**.
-- Solo una orden **PENDIENTE** puede aprobarse o rechazarse.
-- Solo una orden **APROBADA** puede marcarse como recibida.
-- El rechazo de una orden requiere un motivo con mínimo **10 caracteres**.
-- La cantidad solicitada en una orden debe cumplir las restricciones definidas para el producto.
-- Al recibir una orden, el inventario del producto se actualiza automáticamente.
-- Cuando el stock alcanza valores críticos se generan alertas correspondientes.
-
----
-
 # Validaciones
 
 La aplicación utiliza **Zod** para validar todos los DTOs de entrada.
@@ -409,6 +395,10 @@ Ejecutar reporte de cobertura:
 pnpm run test:coverage
 ```
 
+# Cobertura de las pruebas
+
+![alt text](imgs/test-coverage.png)
+
 ---
 
 # Principios de diseño aplicados
@@ -436,3 +426,234 @@ prisma/migrations
 ```
 
 permitiendo reproducir el esquema completo de la base de datos en cualquier entorno de ejecución.
+
+# Ejemplo de uso y ruta critica de la API
+
+tengo configurada una variable en postman que es `url_prod` que apunta a la api desplegada, esta variable de entorno la puedes establecer o poner el endpoint completo ej:
+
+- opcion 1: `https://management-system-express-api-production.up.railway.app/api`
+- opcion 2: `http://localhost:3000/api`
+
+y completarla con los endpoits que estan de ejemplo o como se ven en las imagenes, recuerda revisar la documentacion en [postman](https://documenter.getpostman.com/view/25517816/2sBY4HV4pX#474b896a-c1ed-49ea-9c38-7eb69592c28c)
+
+Podemos ejecutar endpoint a endpoint, y crear varios productos, pero para eso prepare un seed para que la base de datos inicie con varios productos con los que se puedan iniciar flujos.
+
+- **`endpoint (POST): /api/products/seed`**, limpia la base de datos y crea 6 productos iniciales.
+
+![alt text](imgs/products/seed.png)
+
+- **`endpoint (GET): /api/products`**, optiene los productos del inventario y se puede filtrar por categoría, proveedor, estado de alerta (productos con alerta activa) y rango de stock (ej: productos con stock entre X y Y)
+
+![alt text](imgs/products//get-products.png)
+
+```json
+[
+    {
+        "id": 8,
+        "nombre": "Agua Mineral 500ml",
+        "codigo_sku": "BEB-001",
+        "categoria": "Bebidas",
+        "precio": 1500,
+        "stock_actual": 150,
+        "stock_minimo": 50,
+        "proveedor": "Distribuidora Andina",
+        "createdAt": "2026-07-05T23:47:18.874Z",
+        "historial": [],
+        "alertas": [],
+        "ordenes_compra": [],
+        "updatedAt": "2026-07-05T23:47:18.874Z"
+    },
+    {
+        "id": 9,
+        "nombre": "Jugo de Naranja 1L",
+        "codigo_sku": "BEB-002",
+        "categoria": "Bebidas",
+        "precio": 3200,
+        "stock_actual": 30,
+        "stock_minimo": 40,
+        "proveedor": "Lácteos del Valle",
+        "createdAt": "2026-07-05T23:47:18.874Z",
+        "historial": [],
+        "alertas": [],
+        "ordenes_compra": [],
+        "updatedAt": "2026-07-05T23:47:18.874Z"
+    },
+    {
+        "id": 10,
+        "nombre": "Leche Entera 1L",
+        "codigo_sku": "LAC-001",
+        "categoria": "Lacteos",
+        "precio": 2100,
+        "stock_actual": 200,
+        "stock_minimo": 60,
+        "proveedor": "Lácteos del Valle",
+        "createdAt": "2026-07-05T23:47:18.874Z",
+        "historial": [],
+        "alertas": [],
+        "ordenes_compra": [],
+        "updatedAt": "2026-07-05T23:47:18.874Z"
+    },
+    {
+        "id": 11,
+        "nombre": "Yogur Natural 500g",
+        "codigo_sku": "LAC-002",
+        "categoria": "Lacteos",
+        "precio": 2800,
+        "stock_actual": 15,
+        "stock_minimo": 25,
+        "proveedor": "Lácteos del Valle",
+        "createdAt": "2026-07-05T23:47:18.874Z",
+        "historial": [],
+        "alertas": [],
+        "ordenes_compra": [],
+        "updatedAt": "2026-07-05T23:47:18.874Z"
+    },
+    {
+        "id": 12,
+        "nombre": "Papas Fritas 200g",
+        "codigo_sku": "SNA-001",
+        "categoria": "Snacks",
+        "precio": 2500,
+        "stock_actual": 80,
+        "stock_minimo": 30,
+        "proveedor": "SnacksCorp",
+        "createdAt": "2026-07-05T23:47:18.874Z",
+        "historial": [],
+        "alertas": [],
+        "ordenes_compra": [],
+        "updatedAt": "2026-07-05T23:47:18.874Z"
+    },
+    {
+        "id": 13,
+        "nombre": "Detergente 1L",
+        "codigo_sku": "LIM-001",
+        "categoria": "Limpieza",
+        "precio": 4500,
+        "stock_actual": 45,
+        "stock_minimo": 20,
+        "proveedor": "Químicos del Sur",
+        "createdAt": "2026-07-05T23:47:18.874Z",
+        "historial": [],
+        "alertas": [],
+        "ordenes_compra": [],
+        "updatedAt": "2026-07-05T23:47:18.874Z"
+    }
+]
+```
+- `validaciones`: validaciones en los campos para filtrar
+
+![alt text](imgs/products/error-get-products.png)
+
+- **`endpoint (POST): /api/products`** Crear un producto
+
+![alt text](imgs/products//error-create-product.png)
+
+![alt text](imgs/products/create-product.png)
+
+- **`endpoint (GET): /api/products/:id`** Buscar un producto por su `id`
+
+![alt text](imgs/products//get-product-by-id.png)
+
+# Ruta critica
+
+## Ajuste de Inventario
+
+- **`endpoint (PUT): /api/products/14/inventory-adjustment`** realiza un movimiento de aumento o disminucion en el stock y se crea un historial de movimiento
+
+![alt text](imgs/products/update-stock-product-entry.png)
+
+![alt text](imgs/products/update-stock-product-egress.png)
+
+![alt text](imgs/products/get-product-history.png)
+
+## Alertas de Stock Bajo y generacion de orden de compra
+
+siguiendo la reglas de negocio, vamos a hacer un movimiento de stock donde el `stock_actual` quede por debajo del `stock_minimo`, generando asi una alrte y una orden de compra.
+
+![alt text](imgs/products/update-stock-product-generate-alert-and-order.png)
+
+![alt text](imgs/products/get-product-id-alert-order.png)
+
+```json
+{
+    "id": 14,
+    "nombre": "Detergente 8L",
+    "codigo_sku": "LIM-003",
+    "categoria": "Limpieza",
+    "precio": 25500,
+    "stock_actual": 20,
+    "stock_minimo": 30,
+    "proveedor": "Químicos del Sur",
+    "createdAt": "2026-07-05T23:58:27.311Z",
+    "historial": [
+        {
+            "id": "47e03188-4cb3-4b61-a724-28a8b9c738fc",
+            "motivo": "entrada - compra a proveedor",
+            "cantidad": 10,
+            "tipo": "entrada",
+            "fecha": "2026-07-06T00:06:02.533Z",
+            "createdAt": "2026-07-06T00:06:02.533Z"
+        },
+        {
+            "id": "1b76ebdf-cf15-4422-a854-1a9a7912bf4d",
+            "motivo": "salida - compra a proveedor",
+            "cantidad": 10,
+            "tipo": "salida",
+            "fecha": "2026-07-06T00:07:40.408Z",
+            "createdAt": "2026-07-06T00:07:40.408Z"
+        },
+        {
+            "id": "e7f8bbaa-7a97-439f-9df9-91c7ce0311ab",
+            "motivo": "salida - venta a proveedor grande",
+            "cantidad": 165,
+            "tipo": "salida",
+            "fecha": "2026-07-06T00:13:14.736Z",
+            "createdAt": "2026-07-06T00:13:14.736Z"
+        }
+    ],
+    "alertas": [
+        {
+            "id": "27adb3db-1201-40ed-ade8-fdb74d86bea4",
+            "tipo": "STOCK_BAJO",
+            "estado": "ACTIVA",
+            "descripcion": "El stock bajó igual o por debajo del mínimo - stock_actual: 20, stock_minimo: 30",
+            "producto_id": 14,
+            "createdAt": "2026-07-06T00:13:14.743Z",
+            "updatedAt": "2026-07-06T00:13:14.743Z"
+        }
+    ],
+    "ordenes_compra": [
+        {
+            "id": "f9e7ed53-69be-4430-947e-431bdf17e0b6",
+            "estado": "PENDIENTE",
+            "producto_id": 14,
+            "proveedor": "Químicos del Sur",
+            "motivo": null,
+            "cantidad_solicitada": 60,
+            "createdAt": "2026-07-06T00:13:14.749Z",
+            "updatedAt": "2026-07-06T00:13:14.749Z"
+        }
+    ],
+    "updatedAt": "2026-07-06T00:13:14.736Z"
+}
+```
+
+## Gestión de Estados de Órdenes
+
+siguiendo las reglas de negocio vamos a aprobar y recibir la orden, para que aumente el stock y cierre la alerta generada
+
+
+- **`endpoint (PUT): /api/orders/:id`** en este endpoint se actualiza el estado de las ordenes.
+
+![alt text](imgs/order/eorro-update-order.png)
+
+![alt text](imgs/order//update-order-approved.png)
+
+![alt text](imgs/order/update-order-receive.png)
+
+![alt text](imgs/products/get-product-id-alert-order-success.png)
+
+Alerta y order resultas
+
+
+
