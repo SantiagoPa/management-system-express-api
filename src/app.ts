@@ -14,6 +14,5 @@ function main() {
         public_path: envs.publicPath,
         routes: AppRoutes.routes,
     });
-    console.log({envs});
     server.start();
 }
